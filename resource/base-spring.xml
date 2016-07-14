@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd"> -->
+<beans default-init-method="afterPropertiesSet"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
+
+	<bean id="placeholderConfig"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:init.properties</value>
+				<value>classpath:rabbitmq.properties</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" />
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass">
+			<value>${datasource.driverClassName}</value>
+		</property>
+		<property name="jdbcUrl">
+			<value>${datasource.url}</value>
+		</property>
+		<property name="user">
+			<value>${datasource.username}</value>
+		</property>
+		<property name="password">
+			<value>${datasource.password}</value>
+		</property>
+		<property name="initialPoolSize" value="5" />
+		<property name="breakAfterAcquireFailure">
+			<value>false</value>
+		</property>
+		<property name="maxPoolSize" value="20" />
+		<property name="maxIdleTime" value="60" />
+		<property name="acquireIncrement" value="5"></property>
+		<property name="acquireRetryAttempts" value="0" />
+		<property name="acquireRetryDelay" value="5000" />
+		<property name="idleConnectionTestPeriod">
+			<value>1800</value>
+		</property>
+		<property name="checkoutTimeout">
+			<value>30000</value>
+		</property>
+		<property name="preferredTestQuery" value="select 1 from dual" />
+	</bean>
+	 
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="find*" read-only="true" />
+			<tx:method name="*" />
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:pointcut id="netmanagerServiceOperation" expression="bean(*Service)" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="netmanagerServiceOperation" />
+	</aop:config>
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath:sqlmap/*.xml" />
+		 <property name="configLocation" value="classpath:mybatis-config.xml" />
+	</bean>
+	
+
+	<bean id="basePersistence" abstract="true">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	<bean id="com.lytx.webservice.batch.BycleScheduling" class="com.lytx.webservice.batch.BycleScheduling"></bean>
+
+	<bean
+		id="com.lytx.webservice.electrombile.service.persistence.ElectrombilePersistence"
+		class="com.lytx.webservice.electrombile.service.persistence.ElectrombilePersistence"
+		parent="basePersistence">
+	</bean>
+	<bean
+		id="com.lytx.webservice.electrombile.service.impl.ElectrombileService"
+		class="com.lytx.webservice.electrombile.service.impl.ElectrombileServiceImpl">
+		<property name="persistence"
+			ref="com.lytx.webservice.electrombile.service.persistence.ElectrombilePersistence" />
+	</bean>
+	<bean
+		id="com.lytx.webservice.electrombile.service.ElectrombileServiceUtil"
+		class="com.lytx.webservice.electrombile.service.ElectrombileServiceUtil">
+		<property name="service"
+			ref="com.lytx.webservice.electrombile.service.impl.ElectrombileService" />
+	</bean>
+
+	<bean
+		id="com.lytx.webservice.sequence.service.persistence.SequenceGenerator"
+		class="com.lytx.webservice.sequence.service.persistence.SequenceGenerator"
+		parent="basePersistence">
+	</bean>
+	<bean id="com.lytx.webservice.sequence.service.SequenceGeneratorService"
+		class=" com.lytx.webservice.sequence.service.impl.SequenceGeneratorServiceImpl">
+		<property name="persistence"
+			ref="com.lytx.webservice.sequence.service.persistence.SequenceGenerator" />
+	</bean>
+	<bean
+		id="com.lytx.webservice.sequence.service.SequenceGeneratorServiceUtil"
+		class="com.lytx.webservice.sequence.service.SequenceGeneratorServiceUtil">
+		<property name="service"
+			ref="com.lytx.webservice.sequence.service.SequenceGeneratorService" />
+	</bean>
+	
+	
+	<bean
+		id="com.lytx.webservice.dbnotify.service.persistence.DbnotifyPersistence"
+		class="com.lytx.webservice.dbnotify.service.persistence.DbnotifyPersistence"
+		parent="basePersistence">
+	</bean>
+	<bean
+		id="com.lytx.webservice.dbnotify.service.impl.DbnotifyService"
+		class="com.lytx.webservice.dbnotify.service.impl.DbnotifyServiceImpl">
+		<property name="persistence"
+			ref="com.lytx.webservice.dbnotify.service.persistence.DbnotifyPersistence" />
+	</bean>
+	<bean
+		id="com.lytx.webservice.dbnotify.service.DbnotifyServiceUtil"
+		class="com.lytx.webservice.dbnotify.service.DbnotifyServiceUtil">
+		<property name="service"
+			ref="com.lytx.webservice.dbnotify.service.impl.DbnotifyService" />
+	</bean>
+	
+	
+	<bean id="com.lytx.webservice.batch.TrailScheduling" class="com.lytx.webservice.batch.TrailScheduling"></bean>
+	<bean id="com.lytx.webservice.batch.AbnormalScheduling" class="com.lytx.webservice.batch.AbnormalScheduling"></bean>
+	<bean id="com.lytx.webservice.batch.StolenScheduling" class="com.lytx.webservice.batch.StolenScheduling"></bean>
+</beans>

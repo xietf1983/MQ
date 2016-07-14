@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xsi:schemaLocation="http://www.springframework.org/schema/rabbit
+           http://www.springframework.org/schema/rabbit/spring-rabbit-1.5.xsd
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<rabbit:connection-factory id="connectionFactory"
+		username="guest" password="guest" host="localhost" />
+
+
+	<rabbit:template id="rabbitTemplate"
+		connection-factory="connectionFactory" />
+	<!-- <rabbit:admin connection-factory="connectionFactory" /> <rabbit:queue 
+		name="myQueue" /> <rabbit:queue name="myQueue2" durable="false"/> <rabbit:topic-exchange 
+		name="myExchange" durable="false" > <rabbit:bindings> <rabbit:binding queue="myQueue" 
+		pattern="foo" /> <rabbit:binding queue="myQueue2" pattern="alarm" /> </rabbit:bindings> 
+		</rabbit:topic-exchange> <rabbit:listener-container connection-factory="connectionFactory"> 
+		<rabbit:listener ref="testLis" queue-names="myQueue2" /> </rabbit:listener-container> 
+		<bean id="foo" class="com.springmq.Foo" /> <bean id="testLis" class="com.liveyc.rabbitmq.listener.TrailListener" 
+		/> -->
+	<bean id="rabbitConnectionFactory" class="com.rabbitmq.client.ConnectionFactory">
+		<property name="host" value="60.10.61.197" />
+		<property name="port" value="5672" />
+		<property name="username" value="U8bicycle" />
+		<property name="password" value="Jdkj@2016" />
+		<property name="virtualHost" value="/" />
+		<property name="connectionTimeout" value="6000" />
+	</bean>
+	
+	
+	<bean id="abnormalConsumer" class="com.liveyc.rabbitmq.AbnormalConsumer"
+		init-method="afterPropertiesSet">
+		<constructor-arg ref="rabbitConnectionFactory" />
+		<property name="queue" value="ExceptionAlarmRabbitMQ" />
+	</bean>
+	<bean id="blacklistPublish" class="com.liveyc.rabbitmq.publish.BlacklistPublish"
+		init-method="afterPropertiesSet">
+		<constructor-arg ref="rabbitConnectionFactory" />
+		<property name="queue" value="BlacklistRabbitMQ" />
+		<property name="exchange" value="BlacklistPublish" />
+	</bean>
+	<!--  
+	<bean id="trailConsumer" class="com.liveyc.rabbitmq.TrailConsumer"
+		init-method="afterPropertiesSet">
+		<constructor-arg ref="rabbitConnectionFactory" />
+		<property name="queue" value="U8SocketTZ" />
+	</bean>
+
+	
+	<bean id="stolenConsumer" class="com.liveyc.rabbitmq.StolenConsumer"
+		init-method="afterPropertiesSet">
+		<constructor-arg ref="rabbitConnectionFactory" />
+		<property name="queue" value="StolenAlarmRabbitMQ" />
+	</bean>
+
+
+	<bean id="abnormalConsumer" class="com.liveyc.rabbitmq.AbnormalConsumer"
+		init-method="afterPropertiesSet">
+		<constructor-arg ref="rabbitConnectionFactory" />
+		<property name="queue" value="ExceptionAlarmRabbitMQ" />
+	</bean>
+	<bean id="blacklistPublish" class="com.liveyc.rabbitmq.publish.BlacklistPublish"
+		init-method="afterPropertiesSet">
+		<constructor-arg ref="rabbitConnectionFactory" />
+		<property name="queue" value="BlacklistRabbitMQ" />
+		<property name="exchange" value="BlacklistPublish" />
+	</bean>
+	-->
+</beans>

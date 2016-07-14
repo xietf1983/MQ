@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xtsoft.kernel.main.model">
+	<insert id="bycleAlarm_insert"
+		parameterType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
+		insert into
+		BYCLEALARM(alarmId,
+		fdid,
+		plateno,
+		alarmTime,
+		fdStatus,
+		fdLowElecTag,fdMoveTag,
+		fdLockTag,fdChannel,stationId,stationName,longitude,latitude,lngExt,latExt,areaId,vehicleDirect,CREATEDATE,fdNoElecTag,platenoArea,bycleid,alarmType,modifytab)
+		values (#{alarmId},
+		#{fdId,jdbcType=VARCHAR},
+		#{plateNo,jdbcType=VARCHAR},
+		#{alarmTime},
+		#{fdStatus,jdbcType=VARCHAR},
+		#{fdLowElecTag,jdbcType=NUMERIC},#{fdMoveTag,jdbcType=NUMERIC},
+		#{fdLockTag,jdbcType=NUMERIC},#{fdChannel,jdbcType=NUMERIC},#{stationId,jdbcType=VARCHAR},#{stationName,jdbcType=VARCHAR},#{longitude,jdbcType=NUMERIC},#{latitude,jdbcType=NUMERIC},#{lngExt,jdbcType=NUMERIC},#{latExt,jdbcType=NUMERIC},#{areaId,jdbcType=VARCHAR},#{vehicleDirect,jdbcType=VARCHAR},sysdate,#{fdNoElecTag,jdbcType=NUMERIC},#{platenoArea,jdbcType=VARCHAR},#{bycleid,jdbcType=NUMERIC},#{alarmType,jdbcType=NUMERIC},#{modifytab,jdbcType=VARCHAR})
+	</insert>
+	<!-- 
+	<insert id="bulkbycleAlarm_insert" parameterType="java.util.List">
+		insert ALL
+		<foreach collection="list" item="item" index="index"> INTO BYCLEALARM
+			(alarmId,
+			fdid,
+			plateno,
+			alarmTime,
+			fdStatus,
+			fdLowElecTag,fdMoveTag,
+			fdLockTag,fdChannel,stationId,stationName,longitude,latitude,lngExt,latExt,areaId,vehicleDirect,CREATEDATE,fdNoElecTag,platenoArea,bycleid,alarmType,modifytab)
+			values (#{item.alarmId},
+			#{item.fdId,jdbcType=VARCHAR},
+			#{item.plateNo,jdbcType=VARCHAR},
+			#{item.alarmTime},
+			#{item.fdStatus,jdbcType=VARCHAR},
+			#{item.fdLowElecTag,jdbcType=NUMERIC},#{item.fdMoveTag,jdbcType=NUMERIC},
+			#{item.fdLockTag,jdbcType=NUMERIC},#{item.fdChannel,jdbcType=NUMERIC},#{item.stationId,jdbcType=VARCHAR},#{item.stationName,jdbcType=VARCHAR},#{item.longitude,jdbcType=NUMERIC},#{item.latitude,jdbcType=NUMERIC},#{item.lngExt,jdbcType=NUMERIC},#{item.latExt,jdbcType=NUMERIC},#{item.areaId,jdbcType=VARCHAR},#{item.vehicleDirect,jdbcType=VARCHAR},sysdate,#{item.fdNoElecTag,jdbcType=NUMERIC},#{item.platenoArea,jdbcType=VARCHAR},#{item.bycleid,jdbcType=NUMERIC},,#{item.alarmType,jdbcType=NUMERIC},#{item.modifytab,jdbcType=VARCHAR})
+		</foreach>
+		SELECT * FROM dual
+	</insert>
+	 -->
+	 <insert id="bulkbycleAlarm_insert" parameterType="java.util.List">
+		BEGIN
+		<foreach collection="list" item="item" index="index" separator=";" > INTO BYCLEALARM
+			insert into BYCLEALARM (alarmId,
+			fdid,
+			plateno,
+			alarmTime,
+			fdStatus,
+			fdLowElecTag,fdMoveTag,
+			fdLockTag,fdChannel,stationId,stationName,longitude,latitude,lngExt,latExt,areaId,vehicleDirect,CREATEDATE,fdNoElecTag,platenoArea,bycleid,alarmType,modifytab)
+			values (#{item.alarmId},
+			#{item.fdId,jdbcType=VARCHAR},
+			#{item.plateNo,jdbcType=VARCHAR},
+			#{item.alarmTime},
+			#{item.fdStatus,jdbcType=VARCHAR},
+			#{item.fdLowElecTag,jdbcType=NUMERIC},#{item.fdMoveTag,jdbcType=NUMERIC},
+			#{item.fdLockTag,jdbcType=NUMERIC},#{item.fdChannel,jdbcType=NUMERIC},#{item.stationId,jdbcType=VARCHAR},#{item.stationName,jdbcType=VARCHAR},#{item.longitude,jdbcType=NUMERIC},#{item.latitude,jdbcType=NUMERIC},#{item.lngExt,jdbcType=NUMERIC},#{item.latExt,jdbcType=NUMERIC},#{item.areaId,jdbcType=VARCHAR},#{item.vehicleDirect,jdbcType=VARCHAR},sysdate,#{item.fdNoElecTag,jdbcType=NUMERIC},#{item.platenoArea,jdbcType=VARCHAR},#{item.bycleid,jdbcType=NUMERIC},,#{item.alarmType,jdbcType=NUMERIC},#{item.modifytab,jdbcType=VARCHAR})
+		</foreach>
+		;END ;
+	</insert>
+	 
+	<insert id="updatedBycleHandleAlarm_type" parameterType="java.util.HashMap">
+		update
+		bycleTrackedHandle set type=#{TYPE} WHERE alarmId=#{ALARMID}
+	</insert>
+
+	<select id="bycleStation_findone" parameterType="java.util.HashMap"
+		resultType="com.lytx.webservice.electrombile.model.BycleStationModel">
+		select stationId,stationName,areaCode,(select channelName
+		from
+		bycleStationChannel where stationId=#{ID} and
+		channelId=#{FDCHANNEL}
+		AND
+		ROWNUM =1 )as channelName,
+		longitude,latitude,range,areaId,createrUserId from bycleStation
+		where
+		stationId =#{ID} and rownum =1
+	</select>
+
+	<select id="bycleInfoShort_findone" parameterType="java.util.HashMap"
+		resultType="com.lytx.webservice.electrombile.model.BycleInfoShort">
+		select plateNo,fdid,Id,platenoArea,MOBILEPHONE as userTel,OWNER as  from bycleInfo
+		where
+		fdid =#{FDID} AND ROWNUM =1
+	</select>
+	<select id="queryTrackBycleShort_findone" parameterType="java.util.HashMap"
+		resultType="com.lytx.webservice.electrombile.model.TrackBycleShort">
+		select fdid,ruleId, caseId from bycleBlack where
+		fdid
+		=#{FDID} AND ROWNUM =1
+	</select>
+	<select id="querybycleTrackedHandle_findone" parameterType="java.util.HashMap"
+		resultType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
+		select fdid,ActNo, caseId from bycleTrackedHandle where
+		fdid =#{FDID} AND ROWNUM =1
+	</select>
+	<select id="querybycleHandleBytime" parameterType="java.util.HashMap"
+		resultType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
+		select fdid,ActNo, caseId,type,alarmId from
+		bycleTrackedHandle where
+		fdid =#{FDID} AND ROWNUM =1
+	</select>
+	<insert id="bycleHandle_insert"
+		parameterType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
+		insert into
+		bycleTrackedHandle(alarmId,
+		fdid,
+		plateno,
+		alarmTime,
+		fdStatus,
+		fdLowElecTag,fdMoveTag,
+		fdLockTag,stationId,stationName,longitude,latitude,lngExt,latExt,areaId,vehicleDirect,CREATEDATE,fdNoElecTag,platenoArea,bycleid,type,bycleOwner,trackDesc,ruleId,alarmMemo,trackMan,status,actNo,CASEID)
+		values (#{alarmId,jdbcType=NUMERIC},
+		#{fdId,jdbcType=VARCHAR},
+		#{plateNo,jdbcType=VARCHAR},
+		#{alarmTime},
+		#{fdStatus,jdbcType=VARCHAR},
+		#{fdLowElecTag,jdbcType=NUMERIC},#{fdMoveTag,jdbcType=NUMERIC},
+		#{fdLockTag,jdbcType=NUMERIC},#{stationId,jdbcType=VARCHAR},#{stationName,jdbcType=VARCHAR},#{longitude,jdbcType=NUMERIC},#{latitude,jdbcType=NUMERIC},#{lngExt,jdbcType=NUMERIC},#{latExt,jdbcType=NUMERIC},#{areaId,jdbcType=VARCHAR},#{vehicleDirect,jdbcType=VARCHAR},sysdate,#{fdNoElecTag,jdbcType=NUMERIC},#{platenoArea,jdbcType=VARCHAR},#{bycleid,jdbcType=NUMERIC},
+		#{type,jdbcType=NUMERIC},#{bycleOwner,jdbcType=VARCHAR},#{trackDesc,jdbcType=VARCHAR},#{ruleId,jdbcType=VARCHAR},#{alarmMemo,jdbcType=VARCHAR},#{trackMan,jdbcType=VARCHAR},#{status,jdbcType=NUMERIC},#{actNo,jdbcType=VARCHAR},#{caseId,jdbcType=VARCHAR})
+	</insert>
+	<insert id="bycleTrackedRecordModel_insert"
+		parameterType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
+		insert into
+		BYCLETRACKEDRECORD(alarmId,
+		fdid,fdChannel,
+		plateno,
+		alarmTime,
+		fdStatus,
+		fdLowElecTag,fdMoveTag,
+		fdLockTag,stationId,stationName,longitude,latitude,lngExt,latExt,areaId,vehicleDirect,
+		CREATEDATE,fdNoElecTag,platenoArea,bycleid,type,bycleOwner,trackDesc,ruleId,alarmMemo,trackMan,CASEID,DEALSTATUS,ALARMTYPE
+		)
+		values (#{alarmId,jdbcType=NUMERIC},
+		#{fdId,jdbcType=VARCHAR},
+		#{fdChannel,jdbcType=NUMERIC},
+		#{plateNo,jdbcType=VARCHAR},
+		#{alarmTime},
+		#{fdStatus,jdbcType=VARCHAR},
+		#{fdLowElecTag,jdbcType=NUMERIC},#{fdMoveTag,jdbcType=NUMERIC},
+		#{fdLockTag,jdbcType=NUMERIC},#{stationId,jdbcType=VARCHAR},#{stationName,jdbcType=VARCHAR},#{longitude,jdbcType=NUMERIC},#{latitude,jdbcType=NUMERIC},#{lngExt,jdbcType=NUMERIC},#{latExt,jdbcType=NUMERIC},#{areaId,jdbcType=VARCHAR},#{vehicleDirect,jdbcType=VARCHAR},sysdate,#{fdNoElecTag,jdbcType=NUMERIC},#{platenoArea,jdbcType=VARCHAR},#{bycleid,jdbcType=NUMERIC},
+		#{type,jdbcType=NUMERIC},#{bycleOwner,jdbcType=VARCHAR},#{trackDesc,jdbcType=VARCHAR},#{ruleId,jdbcType=VARCHAR},#{alarmMemo,jdbcType=VARCHAR},#{trackMan,jdbcType=VARCHAR},#{caseId,jdbcType=VARCHAR},0,#{alarmType,jdbcType=NUMERIC})
+	</insert>
+	<select id="queryTrackeddbNotify" parameterType="int"
+		resultType="com.lytx.webservice.dbnotify.model.DbnotifyModel">
+        <![CDATA[select t.key, t.action as Type ,t.cnt from cudbnotify t where t.notifytype = #{type} ORDER BY  ACTIONTIME]]>
+	</select>
+	<delete id="deleteDbNotify" parameterType="java.util.HashMap">
+        <![CDATA[ delete from CUDBNOTIFY C   WHERE C.NOTIFYTYPE = #{TYPE} AND c.key=#{KEY}]]>
+	</delete>
+
+	<select id="get_getsequence" statementType="CALLABLE"
+		parameterType="java.util.HashMap" resultType="java.util.HashMap">   
+         <![CDATA[   
+             {call sp_getsequence (#{seqname,mode=IN,jdbcType=NUMERIC},#{maxvalue,mode=OUT,jdbcType=NUMERIC},#{outpar,mode=OUT,jdbcType=NUMERIC},#{cacheSize,mode=IN,jdbcType=NUMERIC})}   
+       ]]>
+	</select>
+
+	<select id="queryBycleBlack" parameterType="java.util.HashMap"
+		resultType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
+		select fdid,ruleId from
+		BYCLEBLACK where
+		fdid =#{FDID} AND
+		ROWNUM =1
+	</select>
+
+	<select id="get_caseId" statementType="CALLABLE" parameterType="java.util.HashMap"
+		resultType="java.util.HashMap">   
+         <![CDATA[   
+             {call pro_tms_caseid (#{areaid,mode=IN,jdbcType=VARCHAR},#{caseid,mode=OUT,jdbcType=VARCHAR})}   
+       ]]>
+	</select>
+
+	<insert id="bycleBlack_insert" parameterType="com.lytx.webservice.electrombile.model.BycleBlack">
+		insert into
+		BycleBlack(RULEID,
+		fdid,
+		plateno,
+		platenoArea,bycleid,AREACODE,VEHICLEOWNER,TRACKLEVEL,STATUS,ISSECRET,CREATEDATE,SOURCE,CASEID,MODIDATE,alarmPhone)
+		values (#{ruleId,jdbcType=VARCHAR},
+		#{fdId,jdbcType=VARCHAR},
+		#{plateNo,jdbcType=VARCHAR},
+		#{platenoArea,jdbcType=VARCHAR},
+		#{bycleId,jdbcType=NUMERIC},#{areaCode,jdbcType=VARCHAR},#{bycleOwner,jdbcType=VARCHAR},4,1,0,sysdate,4,#{caseId,jdbcType=VARCHAR},sysdate,#{alarmPhone,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<insert id="bycleLostRecord_insert"
+		parameterType="com.lytx.webservice.electrombile.model.BycleLostRecord">
+		insert into
+		BycleLostRecord(id,bycleid,
+		fdid,
+		plateno,platenoArea,LOSTSTATUS,STATUS,SUBMITDATE,CASEID,ISCLOSE,ISCLASSICAL,FEESTATUS,ENDDATE,CREATEDATE)
+		values (
+		#{id,jdbcType=NUMERIC},#{bycleId,jdbcType=NUMERIC},
+		#{fdId,jdbcType=VARCHAR},
+		#{plateNo,jdbcType=VARCHAR},
+		#{platenoArea,jdbcType=VARCHAR},
+		0,0,sysdate,#{caseid,jdbcType=VARCHAR},0,0,0,null,sysdate
+		)
+	</insert>
+
+
+	<insert id="tmsSms_insert" parameterType="com.lytx.webservice.electrombile.model.TmsSms">
+		insert into
+		TmsSms(id,fdid,
+		plateno,platenoArea,owner,mobilePhone,smscontent,status,createDate,sendDate,smsType,STATIONID)
+		values (
+		#{id,jdbcType=NUMERIC},
+		#{fdid,jdbcType=VARCHAR},
+		#{plateno,jdbcType=VARCHAR},
+		#{platenoArea,jdbcType=VARCHAR},#{owner,jdbcType=VARCHAR},#{mobilePhone,jdbcType=VARCHAR},#{smscontent,jdbcType=VARCHAR},
+		0,#{createDate,jdbcType=TIMESTAMP},null,#{smsType,jdbcType=VARCHAR},#{stationId,jdbcType=VARCHAR}
+		)
+	</insert>
+	<select id="tmsSmsFindOne" parameterType="java.util.HashMap"
+		resultType="com.lytx.webservice.electrombile.model.TmsSms">
+		select * from
+		TmsSms where
+		fdid =#{FDID,jdbcType=VARCHAR} AND
+		ROWNUM =1
+	</select>
+	<update id="tmsSms_update" parameterType="com.lytx.webservice.electrombile.model.TmsSms">
+		update TmsSms
+		set
+		platenoArea=#{platenoArea,jdbcType=VARCHAR},owner=#{owner,jdbcType=VARCHAR},
+		mobilePhone=#{mobilePhone,jdbcType=VARCHAR},createDate=#{createDate,jdbcType=TIMESTAMP},
+		smscontent=#{smscontent,jdbcType=VARCHAR},status=0,smsType=#{smsType,jdbcType=VARCHAR},stationId=#{stationId,jdbcType=VARCHAR}
+		where id=#{id,jdbcType=NUMERIC}
+
+	</update>
+	<delete id="tmsSms_delete" parameterType="com.lytx.webservice.electrombile.model.TmsSms">
+		delete TmsSms
+		where fdid
+		=#{fdid} and id != #{id,jdbcType=NUMERIC}
+
+	</delete>
+</mapper>
