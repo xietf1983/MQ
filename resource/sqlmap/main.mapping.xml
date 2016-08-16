@@ -151,7 +151,7 @@
         <![CDATA[select t.key, t.action as Type ,t.cnt from cudbnotify t where t.notifytype = #{type} ORDER BY  ACTIONTIME]]>
 	</select>
 	<delete id="deleteDbNotify" parameterType="java.util.HashMap">
-        <![CDATA[ delete from CUDBNOTIFY C   WHERE C.NOTIFYTYPE = #{TYPE} AND c.key=#{KEY}]]>
+        <![CDATA[ delete from CUDBNOTIFY C   WHERE C.NOTIFYTYPE = #{TYPE} AND c.key=#{KEY} and  sysdate > ACTIONTIME + 5/(24*60) ]]>
 	</delete>
 
 	<select id="get_getsequence" statementType="CALLABLE"
