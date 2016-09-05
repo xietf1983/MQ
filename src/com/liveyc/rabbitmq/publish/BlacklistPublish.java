@@ -158,7 +158,7 @@ public class BlacklistPublish {
 					int a = 0;
 				}
 				try {
-					Thread.sleep(6000);
+					Thread.sleep(6000*3);
 				} catch (Exception ex) {
 
 				}
