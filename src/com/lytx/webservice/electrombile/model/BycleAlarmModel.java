@@ -7,6 +7,16 @@ public class BycleAlarmModel {
 	private Long alarmId;
 	private String fdId;
 	private Date alarmTime;
+	private Date receiveTime = new Date();
+
+	public Date getReceiveTime() {
+		return receiveTime;
+	}
+
+	public void setReceiveTime(Date receiveTime) {
+		this.receiveTime = receiveTime;
+	}
+
 	private String fdStatus;
 	private Integer fdLowElecTag;
 	private Integer fdMoveTag;
@@ -19,24 +29,25 @@ public class BycleAlarmModel {
 	private Integer lngExt;
 	private Integer latExt;
 	private String vehicleDirect;
-	private String  areaId;
+	private String areaId;
 	private String bycleOwner;
 	private Integer type;
-	private  String trackDesc;
+	private String trackDesc;
 	private Long trackId;
 	private Integer dealStatus;
-	private  String alarmMemo;
-	private  String trackMan;
-	private  String caseId;
+	private String alarmMemo;
+	private String trackMan;
+	private String caseId;
 	private Integer fdNoElecTag;
 	private String ruleId;
 	private String platenoArea;
 	private String actNo;
 	private String status;
-	private Integer  alarmType;
+	private Integer alarmType;
 	private String modifytab;
 	private String areaCode;
 	private String userTel;
+
 	public String getUserTel() {
 		return userTel;
 	}
@@ -102,6 +113,7 @@ public class BycleAlarmModel {
 	}
 
 	private Long bycleid;
+
 	public String getRuleId() {
 		return ruleId;
 	}
@@ -141,6 +153,7 @@ public class BycleAlarmModel {
 	public void setPlateNo(String plateNo) {
 		this.plateNo = plateNo;
 	}
+
 	public Long getAlarmId() {
 		return alarmId;
 	}
