@@ -10,15 +10,20 @@ import com.lytx.webservice.electrombile.model.BycleAlarmModel;
 import com.lytx.webservice.electrombile.service.ElectrombileServiceUtil;
 import com.lytx.webservice.electrombile.service.persistence.ElectrombilePersistence;
 
-public class ThreadBycleAlarm extends Thread {
+/**
+ * ‘§æØ–≈œ¢≤Â»Î
+ * @author dell
+ *
+ */
+public class ThreadBycleAbnormalAlarm extends Thread {
 	private List<BycleAlarmModel> alarmlist;
 	public static AtomicInteger numberThread = new AtomicInteger(0);
-	private static Logger iLog = Logger.getLogger(ThreadBycleAlarm.class);
+	private static Logger iLog = Logger.getLogger(ThreadBycleAbnormalAlarm.class);
 
-	public ThreadBycleAlarm(List<BycleAlarmModel> _list) {
+	public ThreadBycleAbnormalAlarm(List<BycleAlarmModel> _list) {
 		alarmlist = _list;
 	}
-   
+
 	public void run() {
 		numberThread.getAndIncrement();
 		try {

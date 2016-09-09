@@ -9,6 +9,7 @@ import com.liveyc.rabbitmq.AbnormalConsumer;
 import com.liveyc.rabbitmq.DealDataUtil;
 import com.lytx.webservice.dbnotify.model.DbnotifyModel;
 import com.lytx.webservice.dbnotify.service.DbnotifyServiceUtil;
+import com.lytx.webservice.electrombile.model.TrackBycleShort;
 import com.lytx.webservice.electrombile.service.ElectrombileServiceUtil;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -20,6 +21,7 @@ public class BlacklistPublish {
 	private String queue;
 	private String exchange;
 	private static Logger iLog = Logger.getLogger(BlacklistPublish.class);
+
 	public String getExchange() {
 		return exchange;
 	}
@@ -85,17 +87,36 @@ public class BlacklistPublish {
 
 		@Override
 		public void run() {
+			boolean full = true;
 			while (true) {
 				if (channel == null) {
 					try { // start consuming messages. Auto acknowledge
 							// messages.
 						connection = factory.newConnection();
 						channel = connection.createChannel();
-
+						full = true;
 						channel.exchangeDeclare(getExchange(), "fanout", true);
 						runing = true;
-						// Thread.sleep(6000);
+						int startRow = 0;
+						int rowspan = 100;
+						while (full) {
+							List<TrackBycleShort> fullist = ElectrombileServiceUtil.getService().getTrackBycleShortByRownum(startRow, rowspan);
+							if (fullist == null ||  fullist.size() < rowspan) {
+								full = false;
+							}
+							startRow=startRow+rowspan;
+							if (fullist != null && fullist.size() > 0) {
+								for (TrackBycleShort t : fullist) {
+									ByteBuffer buffer = ByteBuffer.allocate(5);
+									buffer.put((byte) 1);
+									buffer.put(DealDataUtil.intToByteArray(Long.parseLong(t.getFdid())));
+									iLog.error("发生黑名单信息" + t.getFdid());
+									channel.basicPublish(getExchange(), getQueue(), MessageProperties.MINIMAL_PERSISTENT_BASIC, buffer.array());
+								}
+							}
+						}// Thread.sleep(6000);
 					} catch (Exception e) {
+						iLog.error("黑名单发送异常" + e.toString());
 						// e.printStackTrace();
 						if (getChannel() != null) {
 							try {
@@ -116,6 +137,7 @@ public class BlacklistPublish {
 				try {
 					List<DbnotifyModel> list = DbnotifyServiceUtil.getService().getDbnotifyModelList(80);
 					if (list != null && list.size() > 0) {
+						iLog.error("消息名单" + list.size());
 						for (DbnotifyModel d : list) {
 							long value = 0;
 							try {
@@ -124,7 +146,7 @@ public class BlacklistPublish {
 
 							}
 							int sendvalue = 1;
-							if (d.getType()!=1) {
+							if (d.getType() != 1) {
 								sendvalue = 2;
 							}
 							if (value > 0) {
@@ -132,10 +154,11 @@ public class BlacklistPublish {
 								buffer.put((byte) sendvalue);
 								buffer.put(DealDataUtil.intToByteArray(value));
 								try {
-									iLog.error("发生黑名单信息"+org.apache.commons.codec.binary.Hex.encodeHexString(buffer.array()));
+									iLog.error("发生黑名单信息通知信息" + value);
 									channel.basicPublish(getExchange(), getQueue(), MessageProperties.MINIMAL_PERSISTENT_BASIC, buffer.array());
 									DbnotifyServiceUtil.getService().deleteDbnotifyModel(d.getKey(), 80);
 								} catch (Exception e) {
+									iLog.error("黑名单发送异常" + e.toString());
 									if (getChannel() != null) {
 										try {
 											channel.close();
@@ -155,10 +178,11 @@ public class BlacklistPublish {
 					}
 
 				} catch (Exception ex) {
+					iLog.error("黑名单发送异常" + ex.toString());
 					int a = 0;
 				}
 				try {
-					Thread.sleep(6000*3);
+					Thread.sleep(6000 * 3);
 				} catch (Exception ex) {
 
 				}

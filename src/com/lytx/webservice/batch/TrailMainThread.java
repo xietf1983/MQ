@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -24,7 +27,7 @@ public class TrailMainThread extends TimerTask {
 	public static boolean ifull = false;
 	public static long runTimes;
 	public static Date date = new Date();
-
+	public static ThreadPoolExecutor sendMsgthreadPool = new ThreadPoolExecutor(50, 80, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(20), new ThreadPoolExecutor.CallerRunsPolicy());
 	public void run() {
 		while (true) {
 			try {
@@ -53,10 +56,10 @@ public class TrailMainThread extends TimerTask {
 		for (int j = 0; j < maxLength; j++) {
 			list.add((byte[]) e.dequeue());
 		}
-
 		if (list.size() > 0) {
-			new ThreadTrail(list).start();
+			sendMsgthreadPool.execute(new ThreadTrail(list));
 		}
+		
 
 	}
 }

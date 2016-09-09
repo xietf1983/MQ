@@ -32,9 +32,12 @@ public class DbnotifyPersistence extends SqlSessionDaoSupport {
 		Map map = new HashMap();
 		try {
 			map.put("TYPE", type);
-			map.put("KEY", id);
+			if (id != null && !id.equals("")) {
+				map.put("KEY", id);
+			}
 			getSqlSession().delete("deleteDbNotify", map);
 		} catch (Exception ex) {
+			iLog.error("É¾³ýÏûÏ¢Ê§°Ü"+ex.toString());
 			return false;
 		}
 		return true;

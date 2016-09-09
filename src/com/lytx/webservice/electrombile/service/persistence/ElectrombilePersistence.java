@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.ibatis.session.SqlSession;
 import org.apache.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.support.SqlSessionDaoSupport;
@@ -45,31 +46,25 @@ public class ElectrombilePersistence extends SqlSessionDaoSupport {
 		return true;
 	}
 
-	public void batchinsertBycleAlarmList(final List<BycleAlarmModel> alarmlist) {
-
-		try {
-			// sqlSession.
-			// getSqlSession().
-			// org.apache.ibatis.session.SqlSession s = getSqlSession();
-			// for (BycleAlarmModel b : alarmlist) {
-			// s.insert("bycleAlarm_insert", b);
-			// }
-			// getSqlSession().insert("bulkbycleAlarm_insert", alarmlist);
-		} catch (Exception ex) {
-
-			for (BycleAlarmModel bycle : alarmlist) {
-				addBycleAlarm(bycle);
-			}
+	public void batchinsertBycleAlarmList( List<BycleAlarmModel> alarmlist) {
+		 //getSqlSession().insert("bulkbycleAlarm_insert", alarmlist);
+	
+		org.apache.ibatis.session.SqlSession s = getSqlSession();
+		for (BycleAlarmModel b : alarmlist) {
+			s.insert("bycleAlarm_insert", b);
 		}
+		
 	}
 
-	public void batchinsertBycleTrackedRecordList(final List<BycleAlarmModel> alarmlist) {
-		try {
-			getSqlSession().insert("bulkbycleTrackedRecordModel_insert", alarmlist);
-		} catch (Exception ex) {
-			for (BycleAlarmModel bycle : alarmlist) {
-				addBycleTrackedRecord(bycle);
+	public void batchinsertBycleTrackedRecordList( List<BycleAlarmModel> alarmlist) {
+		org.apache.ibatis.session.SqlSession s = getSqlSession();
+		for (BycleAlarmModel b : alarmlist) {
+			try {
+				s.insert("bycleTrackedRecordModel_insert", b);
+			} catch (Exception ex) {
+				iLog.error(ex.toString());
 			}
+
 		}
 
 	}
@@ -100,8 +95,8 @@ public class ElectrombilePersistence extends SqlSessionDaoSupport {
 	public List<TrackBycleShort> getTrackBycleShortByRownum(int start, int rowspan) {
 		List<TrackBycleShort> list = null;
 		HashMap parameter = new HashMap();
-		parameter.put("TRACKID", start);
-		parameter.put("ENDTRACKID", start + rowspan);
+		parameter.put("STARTROW", start);
+		parameter.put("ENDROW", start + rowspan);
 		list = getSqlSession().selectList("queryTrackBycleShortByRownum", parameter);
 		return list;
 

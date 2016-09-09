@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -25,6 +28,9 @@ public class BycleMainThread extends TimerTask {
 	public static long runTimes;
 	public static Date date = new Date();
 	private BycleAlarmModel soap = null;
+	public static ThreadPoolExecutor sendMsgthreadPool = new ThreadPoolExecutor(50, 80, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(20), new ThreadPoolExecutor.CallerRunsPolicy());
+	public static ThreadPoolExecutor abnormalMsgthreadPool = new ThreadPoolExecutor(10, 20, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(20), new ThreadPoolExecutor.CallerRunsPolicy());
+	public static ThreadPoolExecutor trackdedMsgthreadPool = new ThreadPoolExecutor(20, 20, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(20), new ThreadPoolExecutor.CallerRunsPolicy());
 
 	public void run() {
 		while (true) {
@@ -100,12 +106,31 @@ public class BycleMainThread extends TimerTask {
 			iLog.error("当前过电瓶车车数量" + size + "----ThreadBycleAlarm" + ThreadBycleAlarm.numberThread.get());
 		}
 		List<BycleAlarmModel> list = new ArrayList();
+		List<BycleAlarmModel> abnoramalList = new ArrayList();
 		for (int j = 0; j < maxLength; j++) {
-			list.add((BycleAlarmModel) e.dequeue());
+			// 设防移位 || 断电移位。增加到预警表
+			BycleAlarmModel b = (BycleAlarmModel) e.dequeue();
+			if ((b.getFdNoElecTag() == 1 && b.getFdMoveTag() == 1) || (b.getFdLockTag() == 1 && b.getFdMoveTag() == 1)) {
+				// 断电移动与锁定移动时，增加到预警
+				b.setType(0);
+				abnoramalList.add(b);
+
+			}
+			list.add(b);
 		}
 
 		if (list.size() > 0) {
-			new ThreadBycleAlarm(list).start();
+			// 轨迹数据
+			sendMsgthreadPool.execute(new ThreadBycleAlarm(list));
+			// new ThreadBycleAlarm(list).start();
+		}
+		if (abnoramalList != null && abnoramalList.size() > 0) {
+			// 异常数据
+			abnormalMsgthreadPool.execute(new ThreadBycleAbnormalAlarm(abnoramalList));
+		}
+		if (list != null && list.size() > 0) {
+			// 异常数据
+			trackdedMsgthreadPool.execute(new ThreadBycleAbnormalAlarm(list));
 		}
 
 	}

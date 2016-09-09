@@ -382,6 +382,7 @@ public class DealDataUtil {
 		if (s != null && s.getStationId() != null) {
 			int datastart = 0;
 			if (type == 1) {
+				//有时间的
 				while (datastart < infodata.length - 1) {
 					BycleAlarmModel by = new BycleAlarmModel();
 					byte[] bytecar = subBytes(infodata, datastart, 9);
@@ -603,10 +604,6 @@ public class DealDataUtil {
 					long carId = bytes2int(subBytes(bytecar, 2, 4));
 					String buffer = String.valueOf(carId);
 					StringBuffer buffer2 = new StringBuffer();
-					/*
-					 * if (buffer.length() < 10) { for (int j = 0; j < 10 -
-					 * buffer.length(); j++) { buffer2.append("0"); } }
-					 */
 					buffer2.append(buffer);
 					by.setFdId(buffer2.toString());
 					by.setStationId(dbcode);
@@ -699,6 +696,7 @@ public class DealDataUtil {
 					by.setType(0);
 					by.setAlarmType((int) gjlx);
 					by.setAlarmId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.bycleseqName));
+					BycleTask.getInstance().putBycleAlarmModelEvent(by);
 					// 断电与加锁移位
 					// by.setAlarmId(0l);
 					if (by.getFdMoveTag() == 1 && by.getFdLockTag() == 1 || true) {
@@ -728,7 +726,7 @@ public class DealDataUtil {
 							b.setAlarmPhone(m.getUserTel());
 							// 其他潮日志表
 							BycleLostRecord lost = new BycleLostRecord();
-							lost.setCaseid(b.getAreaId());
+							//lost.setCaseid(b.getAreaId());
 							lost.setId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.commonseq));
 							lost.setFdId(m.getFdId());
 							lost.setBycleId(m.getBycleid());
@@ -777,7 +775,7 @@ public class DealDataUtil {
 						}
 					}
 
-					BycleTask.getInstance().putBycleAlarmModelEvent(by);
+					
 				}
 			}
 		}
@@ -795,10 +793,14 @@ public class DealDataUtil {
 				String dbcode = "";
 				dbcode = String.valueOf(bytes2int(subBytes(infodata, start, 4)));
 				start = start + 4;
-				byte date = infodata[7];
-				byte hour = infodata[8];
-				byte minu = infodata[9];
+				byte date = infodata[start];
+				start = start + 1;
+				byte hour = infodata[start];
+				start = start + 1;
+				byte minu = infodata[start];
+				start = start + 1;
 				byte second = infodata[10];
+				start = start + 1;
 				Date curretdate = new Date();
 				if (curretdate.getDate() < date) {
 					curretdate.setMonth(curretdate.getMonth() - 1);
@@ -807,19 +809,27 @@ public class DealDataUtil {
 				curretdate.setHours(hour);
 				curretdate.setMinutes(minu);
 				curretdate.setSeconds(second);
-				start = start + 4;
+				//start = start + 4;
+				//时间
 				BycleStationModel s = ElectrombileServiceUtil.getBycleStationModel(dbcode);
 				start = start + 4;
+				//去掉前面的四个字节
 				int infollength = bytes2Short((subBytes(infodata, start, 2)));
+				//轨迹数据长度
 				start = start + 2;
+				//增加2个字节
 				byte[] infodatas = subBytes(infodata, start, infollength);
 				dealinfodata(infodatas, dbcode, curretdate, s, 1);
 				start = start + infollength;
+				//增加数据的长度
 				start = start + 1;
-			} else if (byteLenth == 6) {
+				//校验位
+			} else if (byteLenth == 4) {
 				String dbcode = "";
 				dbcode = String.valueOf(bytes2int(subBytes(infodata, start, 4)));
 				start = start + 4;
+				//基站ID
+				/*
 				byte date = infodata[7];
 				byte hour = infodata[8];
 				byte minu = infodata[9];
@@ -832,13 +842,14 @@ public class DealDataUtil {
 				curretdate.setHours(hour);
 				curretdate.setMinutes(minu);
 				curretdate.setSeconds(second);
-				start = start + 4;
+				*/
+				//start = start + 4;
 				BycleStationModel s = ElectrombileServiceUtil.getBycleStationModel(dbcode);
 				start = start + 4;
 				int infollength = bytes2Short((subBytes(infodata, start, 2)));
 				start = start + 2;
 				byte[] infodatas = subBytes(infodata, start, infollength);
-				dealinfodata(infodatas, dbcode, curretdate, s, 2);
+				dealinfodata(infodatas, dbcode, null, s, 2);
 				start = start + infollength;
 				start = start + 1;
 			} else {

@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="resource"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-cli-1.1.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/hamcrest-core.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/junit.jar"/>
@@ -40,5 +39,13 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-retry-1.1.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-io-2.4.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-codec-1.4.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/asm-3.3.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/asm-analysis-3.3.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/asm-commons-3.3.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/asm-tree-3.3.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/asm-util-3.3.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/asm-xml-3.3.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-rabbit-1.5.4.RELEASE-sources.jar"/>
 	<classpathentry kind="output" path="webapp/WEB-INF/classes"/>
 </classpath>
