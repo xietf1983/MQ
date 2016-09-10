@@ -101,10 +101,10 @@ public class BlacklistPublish {
 						int rowspan = 100;
 						while (full) {
 							List<TrackBycleShort> fullist = ElectrombileServiceUtil.getService().getTrackBycleShortByRownum(startRow, rowspan);
-							if (fullist == null ||  fullist.size() < rowspan) {
+							if (fullist == null || fullist.size() < rowspan) {
 								full = false;
 							}
-							startRow=startRow+rowspan;
+							startRow = startRow + rowspan;
 							if (fullist != null && fullist.size() > 0) {
 								for (TrackBycleShort t : fullist) {
 									ByteBuffer buffer = ByteBuffer.allocate(5);
@@ -146,8 +146,11 @@ public class BlacklistPublish {
 
 							}
 							int sendvalue = 1;
-							if (d.getType() != 1) {
+							if (d.getType() == 3) {
 								sendvalue = 2;
+							} else {
+								DbnotifyServiceUtil.getService().deleteDbnotifyModel(d.getKey(), 80);
+								continue;
 							}
 							if (value > 0) {
 								ByteBuffer buffer = ByteBuffer.allocate(5);

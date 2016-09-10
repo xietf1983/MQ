@@ -105,11 +105,11 @@ public class AbnormalConsumer {
 
 		@Override
 		public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body) throws IOException {
-			iLog.error("收到一异常信息" + org.apache.commons.codec.binary.Hex.encodeHexString(body));
+			//iLog.error("收到一异常信息" + org.apache.commons.codec.binary.Hex.encodeHexString(body));
 			try {
-				AbnormalMessageTask.getInstance().putAbnormalMessageEvent(body);
+				//AbnormalMessageTask.getInstance().putAbnormalMessageEvent(body);
 			} catch (Exception ex) {
-				DealDataUtil.dealAbnormal(body);
+				//DealDataUtil.dealAbnormal(body);
 			}
 
 		}

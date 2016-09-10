@@ -106,12 +106,12 @@ public class StolenConsumer {
 		@Override
 		public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body) throws IOException {
 			// pool.
-			iLog.error("收到一偷盗信息"+org.apache.commons.codec.binary.Hex.encodeHexString(body));
+			//iLog.error("收到一偷盗信息"+org.apache.commons.codec.binary.Hex.encodeHexString(body));
 			//iLog.error("收到一偷盗信息"+new String(body));
 			try {
-				StolenMessageTask.getInstance().putStolenMessageEvent(body);
+				//StolenMessageTask.getInstance().putStolenMessageEvent(body);
 			} catch (Exception ex) {
-				DealDataUtil.dealStolen(body);
+				//DealDataUtil.dealStolen(body);
 			}
 		}
 
