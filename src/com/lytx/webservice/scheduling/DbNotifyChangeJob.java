@@ -29,8 +29,12 @@ public class DbNotifyChangeJob extends Thread {
 						if (d.getType() == 1) {
 							TrackedBycleUntil.addPlateNo(new TrackBycleShort(d.getCnt(), d.getKey()));
 							DbnotifyServiceUtil.getService().deleteDbnotifyModel(d.getKey(), 80);
-						}else{
+						} else if (d.getType() == 3) {
 							TrackedBycleUntil.remove(new TrackBycleShort(d.getCnt(), d.getKey()));
+							DbnotifyServiceUtil.getService().deleteDbnotifyModel(d.getKey(), 80);
+						} else {
+							TrackedBycleUntil.remove(new TrackBycleShort(d.getCnt(), d.getKey()));
+							TrackedBycleUntil.addPlateNo(new TrackBycleShort(d.getCnt(), d.getKey()));
 							DbnotifyServiceUtil.getService().deleteDbnotifyModel(d.getKey(), 80);
 						}
 					}
