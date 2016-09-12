@@ -3,7 +3,10 @@ package com.liveyc.rabbitmq;
 import java.util.Date;
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
+
 import com.lytx.webservice.batch.BycleTask;
+import com.lytx.webservice.batch.TrailMainThread;
 import com.lytx.webservice.electrombile.model.BycleAlarmModel;
 import com.lytx.webservice.electrombile.model.BycleBlack;
 import com.lytx.webservice.electrombile.model.BycleInfoShort;
@@ -16,6 +19,7 @@ import com.lytx.webservice.sequence.service.SequenceGeneratorServiceUtil;
 import com.lytx.webservice.util.DateUtil;
 
 public class DealDataUtil {
+	private static Logger iLog = Logger.getLogger(DealDataUtil.class);
 
 	public static byte[] subBytes(byte[] src, int begin, int count) {
 		byte[] bs = new byte[count];
@@ -129,7 +133,7 @@ public class DealDataUtil {
 						}
 						TmsSms tt = ElectrombileServiceUtil.getService().findTmsSms(by);
 						if (tt != null && by.getUserTel() != null && !by.getUserTel().equals("")) {
-							if (tt.getCreateDate() != null && tt.getCreateDate().getTime()< (new Date().getTime() - DateUtil.MINUTE) && !by.getStationId().equals(tt.getStationId())) {
+							if (tt.getCreateDate() != null && tt.getCreateDate().getTime() < (new Date().getTime() - DateUtil.MINUTE) && !by.getStationId().equals(tt.getStationId())) {
 								tt.setCreateDate(new Date());
 								tt.setFdid(by.getFdId());
 								tt.setStatus(0);
@@ -331,14 +335,15 @@ public class DealDataUtil {
 								bufferContent.append(by.getPlatenoArea());
 								bufferContent.append(by.getPlateNo());
 								bufferContent.append("车身防盗标签断电了，为避免影响到车辆的正常使用，请经尽快修复或致电防盗标签热线电话18006768976！");
-								//bufferContent.append(by.getStationName());
-								//bufferContent.append("，请尽快确认!");
-								
-								//您的电动车LHxxxxxx车身防盗标签断电了，为避免影响到车辆的正常使用，请经尽快修复或致电防盗标签热线电话18006768976！
+								// bufferContent.append(by.getStationName());
+								// bufferContent.append("，请尽快确认!");
+
+								// 您的电动车LHxxxxxx车身防盗标签断电了，为避免影响到车辆的正常使用，请经尽快修复或致电防盗标签热线电话18006768976！
 								tt.setSmscontent(bufferContent.toString());
 								tt.setOwner(by.getBycleOwner());
 								tt.setMobilePhone(by.getUserTel());
-								//ElectrombileServiceUtil.getService().addToTmsSms(tt, true);
+								// ElectrombileServiceUtil.getService().addToTmsSms(tt,
+								// true);
 							}
 						} else {
 							tt = new TmsSms();
@@ -362,11 +367,12 @@ public class DealDataUtil {
 							bufferContent.append(by.getPlatenoArea());
 							bufferContent.append(by.getPlateNo());
 							bufferContent.append("车身防盗标签断电了，为避免影响到车辆的正常使用，请经尽快修复或致电防盗标签热线电话18006768976！");
-							//bufferContent.append(by.getStationName());
+							// bufferContent.append(by.getStationName());
 							tt.setSmscontent(bufferContent.toString());
 							tt.setOwner(by.getBycleOwner());
 							tt.setMobilePhone(by.getUserTel());
-							//ElectrombileServiceUtil.getService().addToTmsSms(tt, false);
+							// ElectrombileServiceUtil.getService().addToTmsSms(tt,
+							// false);
 							// t.setOwner(owner)
 						}
 					}
@@ -382,7 +388,7 @@ public class DealDataUtil {
 		if (s != null && s.getStationId() != null) {
 			int datastart = 0;
 			if (type == 1) {
-				//有时间的
+				// 有时间的
 				while (datastart < infodata.length - 1) {
 					BycleAlarmModel by = new BycleAlarmModel();
 					byte[] bytecar = subBytes(infodata, datastart, 9);
@@ -459,6 +465,7 @@ public class DealDataUtil {
 					if (bs != null) {
 						by.setPlateNo(bs.getPlateNo());
 						by.setPlatenoArea(bs.getPlatenoArea());
+						by.setBycleOwner(bs.getOwner());
 						by.setBycleid(bs.getId());
 						by.setUserTel(bs.getUserTel());
 					} else {
@@ -478,6 +485,7 @@ public class DealDataUtil {
 					if (by.getFdMoveTag() == 1 && by.getFdLockTag() == 1) {
 						BycleAlarmModel m = by;
 						if (m.getAreaCode() != null && m.getBycleid() != null && m.getBycleid() > 0) {
+							iLog.error("增加到黑名单:" + m.getFdId());
 							BycleBlack b = new BycleBlack();
 							b.setActNo(m.getActNo());
 							b.setAlarmId(m.getAlarmId());
@@ -497,7 +505,8 @@ public class DealDataUtil {
 							b.setPlateNo(m.getPlateNo());
 							b.setBycleOwner(m.getBycleOwner());
 							b.setAreaCode(m.getAreaCode());
-							b.setStatus("1");
+							b.setStatus("0");
+							b.setType(0);
 							b.setIssecret(0);
 							b.setSouce("4");
 							// 其他潮日志表
@@ -531,7 +540,9 @@ public class DealDataUtil {
 								t.setStatus(0);
 								t.setSmsType(type + "");
 								t.setPlatenoArea(by.getPlatenoArea());
-								//t.setSmscontent("电瓶车在时间" + DateUtil.dateToString(by.getAlarmTime()) + by.getStationName() + "处在状态异常 ，请确认是否被盗！");
+								// t.setSmscontent("电瓶车在时间" +
+								// DateUtil.dateToString(by.getAlarmTime()) +
+								// by.getStationName() + "处在状态异常 ，请确认是否被盗！");
 								t.setOwner(by.getBycleOwner());
 								t.setMobilePhone(by.getUserTel());
 								StringBuffer bufferContent = new StringBuffer();
@@ -548,12 +559,13 @@ public class DealDataUtil {
 								bufferContent.append(by.getPlatenoArea());
 								bufferContent.append(by.getPlateNo());
 								bufferContent.append("车身防盗标签断电了，为避免影响到车辆的正常使用，请经尽快修复或致电防盗标签热线电话18006768976！");
-								//bufferContent.append(by.getStationName());
-								//bufferContent.append("，请尽快确认!");
-								
-								//您的电动车LHxxxxxx车身防盗标签断电了，为避免影响到车辆的正常使用，请经尽快修复或致电防盗标签热线电话18006768976！
+								// bufferContent.append(by.getStationName());
+								// bufferContent.append("，请尽快确认!");
+
+								// 您的电动车LHxxxxxx车身防盗标签断电了，为避免影响到车辆的正常使用，请经尽快修复或致电防盗标签热线电话18006768976！
 								t.setSmscontent(bufferContent.toString());
-								//ElectrombileServiceUtil.getService().addToTmsSms(t, true);
+								// ElectrombileServiceUtil.getService().addToTmsSms(t,
+								// true);
 							}
 						} else {
 							if (new Date().getTime() - t.getCreateDate().getTime() > DateUtil.HOUR * 12 && t.getStatus() != 0) {
@@ -578,21 +590,26 @@ public class DealDataUtil {
 								bufferContent.append(by.getPlatenoArea());
 								bufferContent.append(by.getPlateNo());
 								bufferContent.append("车身防盗标签断电了，为避免影响到车辆的正常使用，请经尽快修复或致电防盗标签热线电话18006768976！");
-								//bufferContent.append(by.getStationName());
-								//bufferContent.append("，请尽快确认!");
-								
-								//您的电动车LHxxxxxx车身防盗标签断电了，为避免影响到车辆的正常使用，请经尽快修复或致电防盗标签热线电话18006768976！
+								// bufferContent.append(by.getStationName());
+								// bufferContent.append("，请尽快确认!");
+
+								// 您的电动车LHxxxxxx车身防盗标签断电了，为避免影响到车辆的正常使用，请经尽快修复或致电防盗标签热线电话18006768976！
 								t.setSmscontent(bufferContent.toString());
-								//t.setSmscontent("电瓶车在时间" + DateUtil.dateToString(by.getAlarmTime()) + by.getStationName() + "处在状态异常 ，请确认是否被盗！");
+								// t.setSmscontent("电瓶车在时间" +
+								// DateUtil.dateToString(by.getAlarmTime()) +
+								// by.getStationName() + "处在状态异常 ，请确认是否被盗！");
 								t.setOwner(by.getBycleOwner());
 								t.setMobilePhone(by.getUserTel());
-								//ElectrombileServiceUtil.getService().addToTmsSms(t, false);
+								// ElectrombileServiceUtil.getService().addToTmsSms(t,
+								// false);
 							}
 							// t.setOwner(owner)
 						}
 					}
 
-					BycleTask.getInstance().putBycleAlarmModelEvent(by);
+				
+						BycleTask.getInstance().putBycleAlarmModelEvent(by);
+					
 				}
 			} else if (type == 2) {
 				while (datastart < infodata.length - 1) {
@@ -682,6 +699,7 @@ public class DealDataUtil {
 					if (bs != null) {
 						by.setPlateNo(bs.getPlateNo());
 						by.setPlatenoArea(bs.getPlatenoArea());
+						by.setBycleOwner(bs.getOwner());
 						by.setBycleid(bs.getId());
 						by.setUserTel(bs.getUserTel());
 						// by.setAreaCode(areaCode)
@@ -696,7 +714,9 @@ public class DealDataUtil {
 					by.setType(0);
 					by.setAlarmType((int) gjlx);
 					by.setAlarmId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.bycleseqName));
-					BycleTask.getInstance().putBycleAlarmModelEvent(by);
+					//if (by.getBycleid() > 0) {
+						BycleTask.getInstance().putBycleAlarmModelEvent(by);
+					//}
 					// 断电与加锁移位
 					// by.setAlarmId(0l);
 					if (by.getFdMoveTag() == 1 && by.getFdLockTag() == 1 || true) {
@@ -719,14 +739,15 @@ public class DealDataUtil {
 							b.setPlateNo(m.getPlateNo());
 							b.setBycleOwner(m.getBycleOwner());
 							b.setAreaCode(m.getAreaCode());
-							b.setStatus("1");
+							b.setStatus("0");
 							b.setIssecret(0);
 							b.setSouce("4");
 							b.setBycleOwner(m.getBycleOwner());
 							b.setAlarmPhone(m.getUserTel());
+							b.setType(0);//异常车辆库
 							// 其他潮日志表
 							BycleLostRecord lost = new BycleLostRecord();
-							//lost.setCaseid(b.getAreaId());
+							// lost.setCaseid(b.getAreaId());
 							lost.setId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.commonseq));
 							lost.setFdId(m.getFdId());
 							lost.setBycleId(m.getBycleid());
@@ -775,7 +796,6 @@ public class DealDataUtil {
 						}
 					}
 
-					
 				}
 			}
 		}
@@ -809,41 +829,35 @@ public class DealDataUtil {
 				curretdate.setHours(hour);
 				curretdate.setMinutes(minu);
 				curretdate.setSeconds(second);
-				//start = start + 4;
-				//时间
+				// start = start + 4;
+				// 时间
 				BycleStationModel s = ElectrombileServiceUtil.getBycleStationModel(dbcode);
 				start = start + 4;
-				//去掉前面的四个字节
+				// 去掉前面的四个字节
 				int infollength = bytes2Short((subBytes(infodata, start, 2)));
-				//轨迹数据长度
+				// 轨迹数据长度
 				start = start + 2;
-				//增加2个字节
+				// 增加2个字节
 				byte[] infodatas = subBytes(infodata, start, infollength);
 				dealinfodata(infodatas, dbcode, curretdate, s, 1);
 				start = start + infollength;
-				//增加数据的长度
+				// 增加数据的长度
 				start = start + 1;
-				//校验位
+				// 校验位
 			} else if (byteLenth == 4) {
 				String dbcode = "";
 				dbcode = String.valueOf(bytes2int(subBytes(infodata, start, 4)));
 				start = start + 4;
-				//基站ID
+				// 基站ID
 				/*
-				byte date = infodata[7];
-				byte hour = infodata[8];
-				byte minu = infodata[9];
-				byte second = infodata[10];
-				Date curretdate = new Date();
-				if (curretdate.getDate() < date) {
-					curretdate.setMonth(curretdate.getMonth() - 1);
-				}
-				curretdate.setDate(date);
-				curretdate.setHours(hour);
-				curretdate.setMinutes(minu);
-				curretdate.setSeconds(second);
-				*/
-				//start = start + 4;
+				 * byte date = infodata[7]; byte hour = infodata[8]; byte minu =
+				 * infodata[9]; byte second = infodata[10]; Date curretdate =
+				 * new Date(); if (curretdate.getDate() < date) {
+				 * curretdate.setMonth(curretdate.getMonth() - 1); }
+				 * curretdate.setDate(date); curretdate.setHours(hour);
+				 * curretdate.setMinutes(minu); curretdate.setSeconds(second);
+				 */
+				// start = start + 4;
 				BycleStationModel s = ElectrombileServiceUtil.getBycleStationModel(dbcode);
 				start = start + 4;
 				int infollength = bytes2Short((subBytes(infodata, start, 2)));
