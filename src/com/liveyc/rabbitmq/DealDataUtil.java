@@ -15,6 +15,7 @@ import com.lytx.webservice.electrombile.model.BycleStationModel;
 import com.lytx.webservice.electrombile.model.TmsSms;
 import com.lytx.webservice.electrombile.model.TrackBycleShort;
 import com.lytx.webservice.electrombile.service.ElectrombileServiceUtil;
+import com.lytx.webservice.electrombile.util.TrackedBycleUntil;
 import com.lytx.webservice.sequence.service.SequenceGeneratorServiceUtil;
 import com.lytx.webservice.util.DateUtil;
 
@@ -158,7 +159,7 @@ public class DealDataUtil {
 								tt.setSmscontent(bufferContent.toString());
 								tt.setOwner(by.getBycleOwner());
 								tt.setMobilePhone(by.getUserTel());
-								ElectrombileServiceUtil.getService().addToTmsSms(tt, true);
+								//ElectrombileServiceUtil.getService().addToTmsSms(tt, true);
 							}
 						} else {
 							if (by.getUserTel() != null && !by.getUserTel().equals("")) {
@@ -188,7 +189,7 @@ public class DealDataUtil {
 								tt.setSmscontent(bufferContent.toString());
 								tt.setOwner(by.getBycleOwner());
 								tt.setMobilePhone(by.getUserTel());
-								ElectrombileServiceUtil.getService().addToTmsSms(tt, false);
+								//ElectrombileServiceUtil.getService().addToTmsSms(tt, false);
 							}
 							// t.setOwner(owner)
 						}
@@ -527,6 +528,7 @@ public class DealDataUtil {
 							lost.setIsclassical(0);
 							lost.setFeestatus(0);
 							ElectrombileServiceUtil.getService().addBycleBlack(b, lost);
+							TrackedBycleUntil.addPlateNo(new TrackBycleShort(b.getFdId(), b.getRuleId()));
 						}
 					}
 					if (by.getFdNoElecTag() == 1 && by.getAreaId() != null && by.getBycleid() != null && by.getBycleid() > 0 && by.getUserTel() != null && !by.getUserTel().equals("")) {
@@ -568,7 +570,6 @@ public class DealDataUtil {
 								// true);
 							}
 						} else {
-							if (new Date().getTime() - t.getCreateDate().getTime() > DateUtil.HOUR * 12 && t.getStatus() != 0) {
 								t = new TmsSms();
 								t.setId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.commonseq));
 								t.setCreateDate(new Date());
@@ -602,7 +603,6 @@ public class DealDataUtil {
 								t.setMobilePhone(by.getUserTel());
 								// ElectrombileServiceUtil.getService().addToTmsSms(t,
 								// false);
-							}
 							// t.setOwner(owner)
 						}
 					}
@@ -763,6 +763,7 @@ public class DealDataUtil {
 							lost.setIsclassical(0);
 							lost.setFeestatus(0);
 							ElectrombileServiceUtil.getService().addBycleBlack(b, lost);
+							TrackedBycleUntil.addPlateNo(new TrackBycleShort(b.getFdId(), b.getRuleId()));
 						}
 					}
 					if (by.getFdNoElecTag() == 1 && by.getAreaId() != null && by.getBycleid() != null && by.getBycleid() > 0 && by.getUserTel() != null && !by.getUserTel().equals("")) {
@@ -779,7 +780,7 @@ public class DealDataUtil {
 							t.setSmscontent("电瓶车在时间" + DateUtil.dateToString(by.getAlarmTime()) + by.getStationName() + "处在状态异常 ，请确认是否被盗！");
 							t.setOwner(by.getBycleOwner());
 							t.setMobilePhone(by.getUserTel());
-							ElectrombileServiceUtil.getService().addToTmsSms(t, true);
+							//ElectrombileServiceUtil.getService().addToTmsSms(t, true);
 						} else {
 							t = new TmsSms();
 							t.setId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.commonseq));
@@ -791,7 +792,7 @@ public class DealDataUtil {
 							t.setSmscontent("电瓶车在时间" + DateUtil.dateToString(by.getAlarmTime()) + by.getStationName() + "处在状态异常 ，请确认是否被盗！");
 							t.setOwner(by.getBycleOwner());
 							t.setMobilePhone(by.getUserTel());
-							ElectrombileServiceUtil.getService().addToTmsSms(t, false);
+							//ElectrombileServiceUtil.getService().addToTmsSms(t, false);
 							// t.setOwner(owner)
 						}
 					}

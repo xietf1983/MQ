@@ -153,5 +153,9 @@ public class ElectrombileServiceImpl implements ElectrombileService {
 	public boolean addToTmsSms(TmsSms tms,boolean update) {
 		return getPersistence().addToTmsSms(tms,update);
 	}
+	
+	public boolean findBycleWhite(BycleAlarmModel model){
+		return  getPersistence().findBycleWhite(model);
+	}
 
 }

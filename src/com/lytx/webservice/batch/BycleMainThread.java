@@ -12,7 +12,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 import com.lytx.webservice.electrombile.model.BycleAlarmModel;
+import com.lytx.webservice.electrombile.model.TrackBycleShort;
 import com.lytx.webservice.electrombile.service.ElectrombileServiceUtil;
+import com.lytx.webservice.electrombile.util.TrackedBycleUntil;
 
 import com.lytx.webservice.util.DateUtil;
 
@@ -110,10 +112,14 @@ public class BycleMainThread extends TimerTask {
 		for (int j = 0; j < maxLength; j++) {
 			// 设防移位 || 断电移位。增加到预警表
 			BycleAlarmModel b = (BycleAlarmModel) e.dequeue();
-			if ((b.getFdNoElecTag() == 1 && b.getFdMoveTag() == 1) || (b.getFdLockTag() == 1 && b.getFdMoveTag() == 1)) {
+			if ((b.getFdNoElecTag() == 1 && b.getFdMoveTag() == 1) || (b.getFdLockTag() == 1 && b.getFdMoveTag() == 1) || (b.getFdMoveTag() == 1 && b.getFdNoElecTag() == 1)) {
 				// 断电移动与锁定移动时，增加到预警
-				b.setType(0);
-				abnoramalList.add(b);
+				List<TrackBycleShort> list2 = TrackedBycleUntil.match(b);
+				if (list2 == null || list2.size() == 0) {
+					b.setType(0);
+					abnoramalList.add(b);
+
+				}
 
 			}
 			list.add(b);
@@ -129,8 +135,8 @@ public class BycleMainThread extends TimerTask {
 			abnormalMsgthreadPool.execute(new ThreadBycleAbnormalAlarm(abnoramalList));
 		}
 		if (list != null && list.size() > 0) {
-			// 异常数据
-			trackdedMsgthreadPool.execute(new ThreadBycleAbnormalAlarm(list));
+			// 黑名单
+			trackdedMsgthreadPool.execute(new TrackedBycleMatchThread(list));
 		}
 
 	}

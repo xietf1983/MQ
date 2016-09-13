@@ -12,8 +12,9 @@ import com.lytx.webservice.electrombile.service.persistence.ElectrombilePersiste
 
 /**
  * 预警信息插入
+ * 
  * @author dell
- *
+ * 
  */
 public class ThreadBycleAbnormalAlarm extends Thread {
 	private List<BycleAlarmModel> alarmlist;
@@ -28,11 +29,11 @@ public class ThreadBycleAbnormalAlarm extends Thread {
 		numberThread.getAndIncrement();
 		try {
 
-			ElectrombileServiceUtil.batchinsertBycleAlarmList(alarmlist);
+			ElectrombileServiceUtil.batchinsertTrackedBycleAlarmList(alarmlist);
 		} catch (Exception ex) {
 			iLog.error("批量插入失败" + ex.toString() + "逐个插入");
 			for (BycleAlarmModel b : alarmlist) {
-				ElectrombileServiceUtil.addBycleAlarmModel(b);
+				ElectrombileServiceUtil.getService().addBycleTrackedRecord(b);
 			}
 
 		}

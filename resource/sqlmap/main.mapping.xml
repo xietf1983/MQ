@@ -12,14 +12,15 @@
 		alarmTime,
 		fdStatus,
 		fdLowElecTag,fdMoveTag,
-		fdLockTag,fdChannel,stationId,stationName,longitude,latitude,lngExt,latExt,areaId,vehicleDirect,CREATEDATE,fdNoElecTag,platenoArea,bycleid,alarmType,modifytab)
+		fdLockTag,fdChannel,stationId,stationName,longitude,latitude,lngExt,latExt,areaId,vehicleDirect,CREATEDATE,fdNoElecTag,platenoArea,bycleid,alarmType,modifytab,RECEIVEDATE)
 		values (#{alarmId,jdbcType=NUMERIC},
 		#{fdId,jdbcType=VARCHAR},
 		#{plateNo,jdbcType=VARCHAR},
 		#{alarmTime},
 		#{fdStatus,jdbcType=VARCHAR},
 		#{fdLowElecTag,jdbcType=NUMERIC},#{fdMoveTag,jdbcType=NUMERIC},
-		#{fdLockTag,jdbcType=NUMERIC},#{fdChannel,jdbcType=NUMERIC},#{stationId,jdbcType=VARCHAR},#{stationName,jdbcType=VARCHAR},#{longitude,jdbcType=NUMERIC},#{latitude,jdbcType=NUMERIC},#{lngExt,jdbcType=NUMERIC},#{latExt,jdbcType=NUMERIC},#{areaId,jdbcType=VARCHAR},#{vehicleDirect,jdbcType=VARCHAR},sysdate,#{fdNoElecTag,jdbcType=NUMERIC},#{platenoArea,jdbcType=VARCHAR},#{bycleid,jdbcType=NUMERIC},#{alarmType,jdbcType=NUMERIC},#{modifytab,jdbcType=VARCHAR})
+		#{fdLockTag,jdbcType=NUMERIC},#{fdChannel,jdbcType=NUMERIC},#{stationId,jdbcType=VARCHAR},#{stationName,jdbcType=VARCHAR},#{longitude,jdbcType=NUMERIC},#{latitude,jdbcType=NUMERIC},#{lngExt,jdbcType=NUMERIC},#{latExt,jdbcType=NUMERIC},#{areaId,jdbcType=VARCHAR},#{vehicleDirect,jdbcType=VARCHAR},sysdate,#{fdNoElecTag,jdbcType=NUMERIC},#{platenoArea,jdbcType=VARCHAR},#{bycleid,jdbcType=NUMERIC},#{alarmType,jdbcType=NUMERIC},#{modifytab,jdbcType=VARCHAR},#{receiveTime,jdbcType=TIMESTAMP}
+		)
 	</insert>
 	<!-- <insert id="bulkbycleAlarm_insert" parameterType="java.util.List"> 
 		insert ALL <foreach collection="list" item="item" index="index"> INTO BYCLEALARM 
@@ -70,7 +71,7 @@
 	<select id="queryTrackBycleShortByRownum" parameterType="java.util.Map"
 		resultType="com.lytx.webservice.electrombile.model.TrackBycleShort">
         <![CDATA[
-           SELECT S.ruleId,s.fdid,s.CASEID FROM ( SELECT S.ruleId,s.fdid,s.CASEID ,rownum RN   FROM BYCLEBLACK s where STATUS =1 )S 
+           SELECT S.ruleId,s.fdid,s.CASEID,s.type FROM ( SELECT S.ruleId,s.fdid,s.CASEID ,s.type,rownum RN   FROM BYCLEBLACK s where type =1 and caseid is not null )S 
 		where RN >#{STARTROW} AND   RN <= #{ENDROW}   ]]>
 
 	</select>
@@ -84,7 +85,8 @@
 	</select>
 	<select id="queryTrackBycleShort_findone" parameterType="java.util.HashMap"
 		resultType="com.lytx.webservice.electrombile.model.TrackBycleShort">
-		select fdid,ruleId, caseId from bycleBlack where
+		select fdid,ruleId, caseId,type  from bycleBlack
+		where
 		fdid
 		=#{FDID} AND ROWNUM =1
 	</select>
@@ -159,9 +161,10 @@
 
 	<select id="queryBycleBlack" parameterType="java.util.HashMap"
 		resultType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
-		select fdid,ruleId from
+		select fdid,ruleId,type  from
 		BYCLEBLACK where
-		fdid =#{FDID} AND
+		fdid
+		=#{FDID} AND
 		ROWNUM =1
 	</select>
 
@@ -177,12 +180,12 @@
 		BycleBlack(RULEID,
 		fdid,
 		plateno,
-		platenoArea,bycleid,AREACODE,VEHICLEOWNER,TRACKLEVEL,STATUS,ISSECRET,CREATEDATE,SOURCE,CASEID,MODIDATE,alarmPhone)
+		platenoArea,bycleid,AREACODE,VEHICLEOWNER,TRACKLEVEL,ISSECRET,CREATEDATE,SOURCE,CASEID,MODIDATE,alarmPhone,type)
 		values (#{ruleId,jdbcType=VARCHAR},
 		#{fdId,jdbcType=VARCHAR},
 		#{plateNo,jdbcType=VARCHAR},
 		#{platenoArea,jdbcType=VARCHAR},
-		#{bycleId,jdbcType=NUMERIC},#{areaCode,jdbcType=VARCHAR},#{bycleOwner,jdbcType=VARCHAR},4,1,0,sysdate,4,#{caseId,jdbcType=VARCHAR},sysdate,#{alarmPhone,jdbcType=VARCHAR}
+		#{bycleId,jdbcType=NUMERIC},#{areaCode,jdbcType=VARCHAR},#{bycleOwner,jdbcType=VARCHAR},4,0,sysdate,4,#{caseId,jdbcType=VARCHAR},sysdate,#{alarmPhone,jdbcType=VARCHAR},#{type,jdbcType=NUMERIC}
 		)
 	</insert>
 
@@ -219,6 +222,14 @@
 		select * from
 		TmsSms where
 		fdid =#{FDID,jdbcType=VARCHAR} AND
+		ROWNUM =1
+	</select>
+	<select id="findByclewhite_findone" parameterType="java.util.HashMap"
+		resultType="java.util.HashMap">
+		select fdid from
+		BYCLEWHITE where
+		fdid
+		=#{FDID,jdbcType=VARCHAR} AND
 		ROWNUM =1
 	</select>
 	<update id="tmsSms_update" parameterType="com.lytx.webservice.electrombile.model.TmsSms">

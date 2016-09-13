@@ -20,15 +20,29 @@ public class TrackedBycleMatchThread extends Thread {
 			for (BycleAlarmModel b : alarmlist) {
 				List<TrackBycleShort> list = TrackedBycleUntil.match(b);
 				if (list != null && list.size() > 0) {
-					b.setType(1);
-					b.setAlarmId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.bycleseqName));
-					b.setRuleId(list.get(0).getRuleId());
-					b.setCaseId(list.get(0).getCaseId());
-					ElectrombileServiceUtil.getService().addBycleHandleAlarm(b);
-					BycleAlarmModel model = ElectrombileServiceUtil.getService().getbycleTrackedHandle(b);
-					if (model != null && model.getActNo() != null && !model.getActNo().equals("") && b.getAreaId() != null && !b.getAreaId().equals("")) {
-						b.setActNo(model.getActNo());
-						ElectrombileServiceUtil.getService().addbycleStationTracked(b);
+					if (!ElectrombileServiceUtil.getService().findBycleWhite(b)) {
+						TrackBycleShort ts = ElectrombileServiceUtil.getService().getTrackBycleShort(b.getFdId());
+						if (ts != null) {
+							// Ô¤¾¯¹ýÀ´µÄ
+							b.setStatus("0");
+							if (ts.getType() == 0) {
+								b.setType(0);
+								b.setAlarmId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.bycleseqName));
+								b.setRuleId(ts.getRuleId());
+								b.setCaseId(ts.getCaseId());
+								// b.setCaseId(list.get(0).getCaseId());
+								ElectrombileServiceUtil.getService().addBycleTrackedRecord(b);
+								ElectrombileServiceUtil.getService().addBycleHandleAlarm(b);
+							} else {
+								b.setType(1);
+								b.setAlarmId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.bycleseqName));
+								b.setRuleId(ts.getRuleId());
+								b.setCaseId(ts.getCaseId());
+								// b.setCaseId(list.get(0).getCaseId());
+								ElectrombileServiceUtil.getService().addBycleTrackedRecord(b);
+								ElectrombileServiceUtil.getService().addBycleHandleAlarm(b);
+							}
+						}
 					}
 				}
 			}

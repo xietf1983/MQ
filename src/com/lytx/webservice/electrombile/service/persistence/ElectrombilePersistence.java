@@ -46,25 +46,20 @@ public class ElectrombilePersistence extends SqlSessionDaoSupport {
 		return true;
 	}
 
-	public void batchinsertBycleAlarmList( List<BycleAlarmModel> alarmlist) {
-		 //getSqlSession().insert("bulkbycleAlarm_insert", alarmlist);
-	
+	public void batchinsertBycleAlarmList(List<BycleAlarmModel> alarmlist) {
+		// getSqlSession().insert("bulkbycleAlarm_insert", alarmlist);
+
 		org.apache.ibatis.session.SqlSession s = getSqlSession();
 		for (BycleAlarmModel b : alarmlist) {
 			s.insert("bycleAlarm_insert", b);
 		}
-		
+
 	}
 
-	public void batchinsertBycleTrackedRecordList( List<BycleAlarmModel> alarmlist) {
+	public void batchinsertBycleTrackedRecordList(List<BycleAlarmModel> alarmlist) {
 		org.apache.ibatis.session.SqlSession s = getSqlSession();
 		for (BycleAlarmModel b : alarmlist) {
-			try {
-				s.insert("bycleTrackedRecordModel_insert", b);
-			} catch (Exception ex) {
-				iLog.error(ex.toString());
-			}
-
+			s.insert("bycleTrackedRecordModel_insert", b);
 		}
 
 	}
@@ -110,6 +105,25 @@ public class ElectrombilePersistence extends SqlSessionDaoSupport {
 
 	public TrackedBycle getTrackedBycleByRuleId(String ruleId) {
 		return (TrackedBycle) getSqlSession().selectOne("TrackedBycle_load", ruleId);
+	}
+
+	public boolean findBycleWhite(BycleAlarmModel model) {
+		boolean ret = false;
+		try {
+			try {
+				Map map = new HashMap();
+				map.put("FDID", model.getFdId());
+				Object o = getSqlSession().selectOne("findByclewhite_findone", map);
+				if (o != null) {
+					ret = true;
+				}
+			} catch (Exception ex) {
+				// return null;
+			}
+		} catch (Exception ex) {
+			return false;
+		}
+		return ret;
 	}
 
 	public boolean addBycleHandleAlarm(BycleAlarmModel model) {
@@ -223,7 +237,10 @@ public class ElectrombilePersistence extends SqlSessionDaoSupport {
 		BycleAlarmModel s = findBycleBlack(b.getFdId());
 		if (s == null) {
 			getSqlSession().insert("bycleBlack_insert", b);
-			getSqlSession().insert("bycleLostRecord_insert", lost);
+			// getSqlSession().insert("bycleLostRecord_insert", lost);
+		} else {
+			b.setCaseId(s.getCaseId());
+			b.setRuleId(s.getRuleId());
 		}
 		return true;
 	}

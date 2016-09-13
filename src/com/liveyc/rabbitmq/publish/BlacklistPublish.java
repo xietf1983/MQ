@@ -107,11 +107,13 @@ public class BlacklistPublish {
 							startRow = startRow + rowspan;
 							if (fullist != null && fullist.size() > 0) {
 								for (TrackBycleShort t : fullist) {
-									ByteBuffer buffer = ByteBuffer.allocate(5);
-									buffer.put((byte) 1);
-									buffer.put(DealDataUtil.intToByteArray(Long.parseLong(t.getFdid())));
-									iLog.error("发生黑名单信息" + t.getFdid());
-									channel.basicPublish(getExchange(), getQueue(), MessageProperties.MINIMAL_PERSISTENT_BASIC, buffer.array());
+									if (t.getType() == 1) {
+										ByteBuffer buffer = ByteBuffer.allocate(5);
+										buffer.put((byte) 1);
+										buffer.put(DealDataUtil.intToByteArray(Long.parseLong(t.getFdid())));
+										iLog.error("发生黑名单信息" + t.getFdid());
+										channel.basicPublish(getExchange(), getQueue(), MessageProperties.MINIMAL_PERSISTENT_BASIC, buffer.array());
+									}
 								}
 							}
 						}// Thread.sleep(6000);
@@ -139,44 +141,49 @@ public class BlacklistPublish {
 					if (list != null && list.size() > 0) {
 						iLog.error("消息名单" + list.size());
 						for (DbnotifyModel d : list) {
-							long value = 0;
-							try {
-								value = (Long.parseLong(d.getCnt()));
-							} catch (Exception e) {
-
-							}
-							int sendvalue = 1;
-							if (d.getType() == 3) {
-								sendvalue = 2;
-							} else {
-								DbnotifyServiceUtil.getService().deleteDbnotifyModel(d.getKey(), 80);
-								continue;
-							}
-							if (value > 0) {
-								ByteBuffer buffer = ByteBuffer.allocate(5);
-								buffer.put((byte) sendvalue);
-								buffer.put(DealDataUtil.intToByteArray(value));
+							TrackBycleShort tshort = ElectrombileServiceUtil.getService().getTrackBycleShort(d.getCnt());
+							if (tshort.getType() == 1) {
+								long value = 0;
 								try {
-									iLog.error("发生黑名单信息通知信息" + value);
-									channel.basicPublish(getExchange(), getQueue(), MessageProperties.MINIMAL_PERSISTENT_BASIC, buffer.array());
-									DbnotifyServiceUtil.getService().deleteDbnotifyModel(d.getKey(), 80);
+									value = (Long.parseLong(d.getCnt()));
 								} catch (Exception e) {
-									iLog.error("黑名单发送异常" + e.toString());
-									if (getChannel() != null) {
-										try {
-											channel.close();
-										} catch (Exception ex) {
+
+								}
+								int sendvalue = 1;
+								if (d.getType() == 3) {
+									sendvalue = 2;
+								} else {
+									DbnotifyServiceUtil.getService().deleteDbnotifyModel(d.getKey(), 80);
+									continue;
+								}
+								if (value > 0) {
+									ByteBuffer buffer = ByteBuffer.allocate(5);
+									buffer.put((byte) sendvalue);
+									buffer.put(DealDataUtil.intToByteArray(value));
+									try {
+										iLog.error("发生黑名单信息通知信息" + value);
+										channel.basicPublish(getExchange(), getQueue(), MessageProperties.MINIMAL_PERSISTENT_BASIC, buffer.array());
+										DbnotifyServiceUtil.getService().deleteDbnotifyModel(d.getKey(), 80);
+									} catch (Exception e) {
+										iLog.error("黑名单发送异常" + e.toString());
+										if (getChannel() != null) {
+											try {
+												channel.close();
+											} catch (Exception ex) {
+											}
 										}
-									}
-									if (getConnection() != null) {
-										try {
-											getConnection().close();
-										} catch (Exception ex) {
+										if (getConnection() != null) {
+											try {
+												getConnection().close();
+											} catch (Exception ex) {
+											}
 										}
 									}
 								}
-							}
 
+							} else {
+								DbnotifyServiceUtil.getService().deleteDbnotifyModel(d.getKey(), 80);
+							}
 						}
 					}
 

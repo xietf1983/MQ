@@ -54,4 +54,6 @@ public interface ElectrombileService {
 	public boolean addBycleBlack(BycleBlack b, BycleLostRecord lost);
 
 	public String getCaseIdNext(String areaid);
+	
+	public boolean findBycleWhite(BycleAlarmModel model);
 }

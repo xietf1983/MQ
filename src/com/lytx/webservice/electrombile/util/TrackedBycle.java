@@ -13,7 +13,7 @@ import com.lytx.webservice.electrombile.model.BycleAlarmModel;
 import com.lytx.webservice.electrombile.model.TrackBycleShort;
 
 public class TrackedBycle {
-	Map<String, List<TrackBycleShort>> hp = new HashMap();
+	Map<String, TrackBycleShort> hp = new HashMap();
 	List<TrackBycleShort> complexPlateNoList = new ArrayList<TrackBycleShort>();
 
 	public TrackedBycle() {
@@ -25,72 +25,17 @@ public class TrackedBycle {
 	/* 初始化布控矩阵 */
 	private void initTrackedMatrix() {
 		hp.clear();
-		complexPlateNoList.clear();
 	}
 
 	/* 增加布控车牌号 */
 	public void addPlateNo(TrackBycleShort plateNo) {
 		// 精确布控
-
-		if (plateNo.getFdid() != null && plateNo.getFdid().indexOf("*") < 0 && plateNo.getFdid().indexOf("?") < 0) {
-			if (hp.get(plateNo.getFdid()) == null) {
-				List<TrackBycleShort> list = new ArrayList();
-				list.add(plateNo);
-				hp.put(plateNo.getFdid(), list);
-			} else {
-				List<TrackBycleShort> list = hp.get(plateNo.getFdid());
-				boolean ret = false;
-				for (TrackBycleShort p : list) {
-					if (p.getRuleId().equals(plateNo.getRuleId())) {
-						ret = true;
-						break;
-					}
-				}
-				if (!ret) {
-					list.add(plateNo);
-					hp.put(plateNo.getFdid(), list);
-				}
-
-			}
-		} else if (plateNo.getFdid() != null && (plateNo.getFdid().indexOf("*") > -1 || plateNo.getFdid().indexOf("?") > -1)) {
-			this.complexPlateNoList.add(plateNo);
-		}
+		hp.put(plateNo.getFdid(), plateNo);
 
 	}
 
 	public void removePlateNo(TrackBycleShort plateNo) {
-		if (plateNo != null && plateNo.getFdid() != null) {
-			if (plateNo.getFdid().indexOf("*") > -1 || plateNo.getFdid().indexOf("?") > -1) {
-				// 模糊
-				for (TrackBycleShort p : this.complexPlateNoList) {
-					if (p.getRuleId().equals(plateNo.getRuleId())) {
-						this.complexPlateNoList.remove(p);
-						break;
-					}
-				}
-
-			} else {
-				if (hp.containsKey(plateNo.getFdid())) {
-					List<TrackBycleShort> list = hp.get(plateNo.getFdid());
-					Iterator<TrackBycleShort> it = list.iterator();
-					while (it.hasNext()) {
-						TrackBycleShort data = it.next();
-						if (data.getRuleId().equals(plateNo.getRuleId())) {
-							it.remove();
-							list.remove(data);
-						}
-					}
-
-					if (list.size() < 1) {
-						list = null;
-						hp.remove(plateNo.getRuleId());
-					} else {
-						hp.put(plateNo.getRuleId(), list);
-					}
-				}
-
-			}
-		}
+		hp.remove(plateNo.getRuleId());
 
 	}
 
@@ -136,19 +81,7 @@ public class TrackedBycle {
 	public List<TrackBycleShort> match(BycleAlarmModel plateNo) {
 		List<TrackBycleShort> matchList = new ArrayList<TrackBycleShort>();
 		if (hp.get(plateNo.getFdId()) != null) {
-			List<TrackBycleShort> list = hp.get(plateNo.getFdId());
-			for (TrackBycleShort p : list) {
-				matchList.add(p);
-			}
-		}
-		for (int i = 0; i < this.complexPlateNoList.size(); i++) {
-			String regEx = complexPlateNoToRE(this.complexPlateNoList.get(i).getFdid());
-			Pattern p = Pattern.compile(regEx, Pattern.CASE_INSENSITIVE);
-			Matcher m = p.matcher(plateNo.getFdId());
-			boolean b = m.find();
-			if (b) {
-				matchList.add(this.complexPlateNoList.get(i));
-			}
+			matchList.add(hp.get(plateNo.getFdId()));
 		}
 		return matchList;
 	}
