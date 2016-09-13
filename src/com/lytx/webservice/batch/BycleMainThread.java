@@ -115,7 +115,7 @@ public class BycleMainThread extends TimerTask {
 			if ((b.getFdNoElecTag() == 1 && b.getFdMoveTag() == 1) || (b.getFdLockTag() == 1 && b.getFdMoveTag() == 1) || (b.getFdMoveTag() == 1 && b.getFdNoElecTag() == 1)) {
 				// 断电移动与锁定移动时，增加到预警
 				List<TrackBycleShort> list2 = TrackedBycleUntil.match(b);
-				if (list2 == null || list2.size() == 0) {
+				if (list2 == null || list2.size() == 0 || list2.get(0).getType() == 0) {
 					b.setType(0);
 					abnoramalList.add(b);
 

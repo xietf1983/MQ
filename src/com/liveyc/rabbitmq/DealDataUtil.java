@@ -528,7 +528,12 @@ public class DealDataUtil {
 							lost.setIsclassical(0);
 							lost.setFeestatus(0);
 							ElectrombileServiceUtil.getService().addBycleBlack(b, lost);
-							TrackedBycleUntil.addPlateNo(new TrackBycleShort(b.getFdId(), b.getRuleId()));
+							//TrackedBycleUntil.addPlateNo(new TrackBycleShort(b.getFdId(), b.getRuleId()));
+							by.setCaseId(b.getCaseId());
+							by.setRuleId(b.getRuleId());
+							by.setType(0);
+							ElectrombileServiceUtil.getService().addBycleTrackedRecord(by);
+							ElectrombileServiceUtil.getService().addBycleHandleAlarm(by);
 						}
 					}
 					if (by.getFdNoElecTag() == 1 && by.getAreaId() != null && by.getBycleid() != null && by.getBycleid() > 0 && by.getUserTel() != null && !by.getUserTel().equals("")) {
@@ -719,7 +724,7 @@ public class DealDataUtil {
 					//}
 					// 断电与加锁移位
 					// by.setAlarmId(0l);
-					if (by.getFdMoveTag() == 1 && by.getFdLockTag() == 1 || true) {
+					if (by.getFdMoveTag() == 1 && by.getFdLockTag() == 1 ) {
 						BycleAlarmModel m = by;
 						if (m.getAreaCode() != null && m.getBycleid() != null && m.getBycleid() > 0) {
 							BycleBlack b = new BycleBlack();
@@ -763,7 +768,12 @@ public class DealDataUtil {
 							lost.setIsclassical(0);
 							lost.setFeestatus(0);
 							ElectrombileServiceUtil.getService().addBycleBlack(b, lost);
-							TrackedBycleUntil.addPlateNo(new TrackBycleShort(b.getFdId(), b.getRuleId()));
+							//TrackedBycleUntil.addPlateNo(new TrackBycleShort(b.getFdId(), b.getRuleId()));
+							by.setCaseId(b.getCaseId());
+							by.setRuleId(b.getRuleId());
+							by.setType(0);
+							ElectrombileServiceUtil.getService().addBycleTrackedRecord(by);
+							ElectrombileServiceUtil.getService().addBycleHandleAlarm(by);
 						}
 					}
 					if (by.getFdNoElecTag() == 1 && by.getAreaId() != null && by.getBycleid() != null && by.getBycleid() > 0 && by.getUserTel() != null && !by.getUserTel().equals("")) {

@@ -26,13 +26,7 @@ public class TrackedBycleMatchThread extends Thread {
 							// Ô¤¾¯¹ýÀ´µÄ
 							b.setStatus("0");
 							if (ts.getType() == 0) {
-								b.setType(0);
-								b.setAlarmId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.bycleseqName));
-								b.setRuleId(ts.getRuleId());
-								b.setCaseId(ts.getCaseId());
-								// b.setCaseId(list.get(0).getCaseId());
-								ElectrombileServiceUtil.getService().addBycleTrackedRecord(b);
-								ElectrombileServiceUtil.getService().addBycleHandleAlarm(b);
+								continue;
 							} else {
 								b.setType(1);
 								b.setAlarmId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.bycleseqName));
