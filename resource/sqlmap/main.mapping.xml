@@ -161,11 +161,9 @@
 
 	<select id="queryBycleBlack" parameterType="java.util.HashMap"
 		resultType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
-		select fdid,ruleId,type  from
+		select fdid,ruleId,type,caseId  from
 		BYCLEBLACK where
-		fdid
-		=#{FDID} AND
-		ROWNUM =1
+		fdid=#{FDID} AND ROWNUM =1
 	</select>
 
 	<select id="get_caseId" statementType="CALLABLE" parameterType="java.util.HashMap"
