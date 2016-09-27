@@ -34,7 +34,8 @@ public interface ElectrombileService {
 	public BycleAlarmModel findBycleHandleAlarm(String fdId, String startTime, String endTime);
 
 	public boolean addBycleHandleAlarm(BycleAlarmModel model);
-
+	
+	public boolean addbycleAlarmPreDeal(BycleAlarmModel model);
 	public void deletecudbnotifyByType(int type);
 
 	public void deleteDbNotify(String key, int type);

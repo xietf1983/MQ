@@ -513,6 +513,7 @@ public class DealDataUtil {
 							b.setIssecret(0);
 							b.setSouce("4");
 							// 其他潮日志表
+							/*
 							BycleLostRecord lost = new BycleLostRecord();
 							lost.setCaseid(b.getAreaId());
 							lost.setId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.commonseq));
@@ -529,96 +530,23 @@ public class DealDataUtil {
 							lost.setIsclose(0);
 							lost.setIsclassical(0);
 							lost.setFeestatus(0);
-
+							**/
 							// TrackedBycleUntil.addPlateNo(new
 							// TrackBycleShort(b.getFdId(), b.getRuleId()));
 						
 							if (!ElectrombileServiceUtil.getService().findBycleWhite(by)) {
-								ElectrombileServiceUtil.getService().addBycleBlack(b, lost);
-								by.setCaseId(b.getCaseId());
-								by.setRuleId(b.getRuleId());
+								//ElectrombileServiceUtil.getService().addBycleBlack(b, lost);
+								//by.setCaseId(b.getCaseId());
+								//by.setRuleId(b.getRuleId());
 								by.setType(0);
-								ElectrombileServiceUtil.getService().addBycleTrackedRecord(by);
-								ElectrombileServiceUtil.getService().addBycleHandleAlarm(by);
+								ElectrombileServiceUtil.getService().addbycleAlarmPreDeal(by);
+								//ElectrombileServiceUtil.getService().addBycleTrackedRecord(by);
+								//by.set
+								//ElectrombileServiceUtil.getService().addBycleHandleAlarm(by);
 							}
 						}
 					}
-					if (by.getFdNoElecTag() == 1 && by.getAreaId() != null && by.getBycleid() != null && by.getBycleid() > 0 && by.getUserTel() != null && !by.getUserTel().equals("")) {
-						// 美隔12小时候发送短信
-						TmsSms t = ElectrombileServiceUtil.getService().findTmsSms(by);
-						if (t != null) {
-							// t.setId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.commonseq));
-							if (new Date().getTime() - t.getCreateDate().getTime() > DateUtil.HOUR * 12 && t.getStatus() != 0) {
-								t.setCreateDate(new Date());
-								t.setFdid(by.getFdId());
-								t.setStatus(0);
-								t.setSmsType(type + "");
-								t.setPlatenoArea(by.getPlatenoArea());
-								// t.setSmscontent("电瓶车在时间" +
-								// DateUtil.dateToString(by.getAlarmTime()) +
-								// by.getStationName() + "处在状态异常 ，请确认是否被盗！");
-								t.setOwner(by.getBycleOwner());
-								t.setMobilePhone(by.getUserTel());
-								StringBuffer bufferContent = new StringBuffer();
-								if (by.getBycleOwner() != null) {
-									bufferContent.append(by.getBycleOwner());
-									bufferContent.append(",");
-								} else {
-									// bufferContent.append("");
-								}
-								t.setPlatenoArea(by.getPlatenoArea());
-								t.setPlateno(by.getPlateNo());
-								t.setStationId(by.getStationId());
-								bufferContent.append("您的电动车");
-								bufferContent.append(by.getPlatenoArea());
-								bufferContent.append(by.getPlateNo());
-								bufferContent.append("车身防盗标签断电了，为避免影响到车辆的正常使用，请经尽快修复或致电防盗标签热线电话18006768976！");
-								// bufferContent.append(by.getStationName());
-								// bufferContent.append("，请尽快确认!");
-
-								// 您的电动车LHxxxxxx车身防盗标签断电了，为避免影响到车辆的正常使用，请经尽快修复或致电防盗标签热线电话18006768976！
-								t.setSmscontent(bufferContent.toString());
-								// ElectrombileServiceUtil.getService().addToTmsSms(t,
-								// true);
-							}
-						} else {
-							t = new TmsSms();
-							t.setId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.commonseq));
-							t.setCreateDate(new Date());
-							t.setFdid(by.getFdId());
-							t.setStatus(0);
-							t.setSmsType(type + "");
-							t.setPlatenoArea(by.getPlatenoArea());
-							StringBuffer bufferContent = new StringBuffer();
-							if (by.getBycleOwner() != null) {
-								bufferContent.append(by.getBycleOwner());
-								bufferContent.append(",");
-							} else {
-								// bufferContent.append("");
-							}
-							t.setPlatenoArea(by.getPlatenoArea());
-							t.setPlateno(by.getPlateNo());
-							t.setStationId(by.getStationId());
-							bufferContent.append("您的电动车");
-							bufferContent.append(by.getPlatenoArea());
-							bufferContent.append(by.getPlateNo());
-							bufferContent.append("车身防盗标签断电了，为避免影响到车辆的正常使用，请经尽快修复或致电防盗标签热线电话18006768976！");
-							// bufferContent.append(by.getStationName());
-							// bufferContent.append("，请尽快确认!");
-
-							// 您的电动车LHxxxxxx车身防盗标签断电了，为避免影响到车辆的正常使用，请经尽快修复或致电防盗标签热线电话18006768976！
-							t.setSmscontent(bufferContent.toString());
-							// t.setSmscontent("电瓶车在时间" +
-							// DateUtil.dateToString(by.getAlarmTime()) +
-							// by.getStationName() + "处在状态异常 ，请确认是否被盗！");
-							t.setOwner(by.getBycleOwner());
-							t.setMobilePhone(by.getUserTel());
-							// ElectrombileServiceUtil.getService().addToTmsSms(t,
-							// false);
-							// t.setOwner(owner)
-						}
-					}
-
+					
 					BycleTask.getInstance().putBycleAlarmModelEvent(by);
 
 				}
@@ -757,6 +685,7 @@ public class DealDataUtil {
 							b.setAlarmPhone(m.getUserTel());
 							b.setType(0);// 异常车辆库
 							// 其他潮日志表
+							/*
 							BycleLostRecord lost = new BycleLostRecord();
 							// lost.setCaseid(b.getAreaId());
 							lost.setId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.commonseq));
@@ -773,51 +702,22 @@ public class DealDataUtil {
 							lost.setIsclose(0);
 							lost.setIsclassical(0);
 							lost.setFeestatus(0);
+							*/
 							//ElectrombileServiceUtil.getService().addBycleBlack(b, lost);
 							// TrackedBycleUntil.addPlateNo(new
 							// TrackBycleShort(b.getFdId(), b.getRuleId()));
 							if (!ElectrombileServiceUtil.getService().findBycleWhite(by)) {
-								ElectrombileServiceUtil.getService().addBycleBlack(b, lost);
-								by.setCaseId(b.getCaseId());
-								by.setRuleId(b.getRuleId());
+								//ElectrombileServiceUtil.getService().addBycleBlack(b, lost);
+								//by.setCaseId(b.getCaseId());
+								//by.setRuleId(b.getRuleId());
 								by.setType(0);
-								ElectrombileServiceUtil.getService().addBycleTrackedRecord(by);
-								ElectrombileServiceUtil.getService().addBycleHandleAlarm(by);
+								ElectrombileServiceUtil.getService().addbycleAlarmPreDeal(by);
+								//ElectrombileServiceUtil.getService().addBycleTrackedRecord(by);
+								//ElectrombileServiceUtil.getService().addBycleHandleAlarm(by);
 							}
 						}
 					}
-					if (by.getFdNoElecTag() == 1 && by.getAreaId() != null && by.getBycleid() != null && by.getBycleid() > 0 && by.getUserTel() != null && !by.getUserTel().equals("")) {
-						// 美隔12小时候发送短信
-						TmsSms t = ElectrombileServiceUtil.getService().findTmsSms(by);
-						if (t != null) {
-							// t.setId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.commonseq));
-							if (new Date().getTime() - t.getCreateDate().getTime() > DateUtil.HOUR * 12 && t.getStatus() != 0)
-								t.setCreateDate(new Date());
-							t.setFdid(by.getFdId());
-							t.setStatus(0);
-							t.setSmsType(type + "");
-							t.setPlatenoArea(by.getPlatenoArea());
-							t.setSmscontent("电瓶车在时间" + DateUtil.dateToString(by.getAlarmTime()) + by.getStationName() + "处在状态异常 ，请确认是否被盗！");
-							t.setOwner(by.getBycleOwner());
-							t.setMobilePhone(by.getUserTel());
-							// ElectrombileServiceUtil.getService().addToTmsSms(t,
-							// true);
-						} else {
-							t = new TmsSms();
-							t.setId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.commonseq));
-							t.setCreateDate(new Date());
-							t.setFdid(by.getFdId());
-							t.setStatus(0);
-							t.setSmsType(type + "");
-							t.setPlatenoArea(by.getPlatenoArea());
-							t.setSmscontent("电瓶车在时间" + DateUtil.dateToString(by.getAlarmTime()) + by.getStationName() + "处在状态异常 ，请确认是否被盗！");
-							t.setOwner(by.getBycleOwner());
-							t.setMobilePhone(by.getUserTel());
-							// ElectrombileServiceUtil.getService().addToTmsSms(t,
-							// false);
-							// t.setOwner(owner)
-						}
-					}
+					
 
 				}
 			}

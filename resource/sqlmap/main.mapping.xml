@@ -120,6 +120,31 @@
 		#{fdLockTag,jdbcType=NUMERIC},#{stationId,jdbcType=VARCHAR},#{stationName,jdbcType=VARCHAR},#{longitude,jdbcType=NUMERIC},#{latitude,jdbcType=NUMERIC},#{lngExt,jdbcType=NUMERIC},#{latExt,jdbcType=NUMERIC},#{areaId,jdbcType=VARCHAR},#{vehicleDirect,jdbcType=VARCHAR},sysdate,#{fdNoElecTag,jdbcType=NUMERIC},#{platenoArea,jdbcType=VARCHAR},#{bycleid,jdbcType=NUMERIC},
 		#{type,jdbcType=NUMERIC},#{bycleOwner,jdbcType=VARCHAR},#{trackDesc,jdbcType=VARCHAR},#{ruleId,jdbcType=VARCHAR},#{alarmMemo,jdbcType=VARCHAR},#{trackMan,jdbcType=VARCHAR},#{status,jdbcType=NUMERIC},#{actNo,jdbcType=VARCHAR},#{caseId,jdbcType=VARCHAR})
 	</insert>
+	<select id="queryBycleAlarmPreDeal" parameterType="java.util.HashMap"
+		resultType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
+		select fdid, caseId,type,alarmId from
+		bycleAlarmPreDeal where
+		fdid =#{FDID} AND ROWNUM =1
+	</select>
+	<!-- bycleAlarmPreDeal -->
+	<insert id="bycleAlarmPreDeal_insert"
+		parameterType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
+		insert into
+		bycleAlarmPreDeal(alarmId,
+		fdid,
+		plateno,
+		alarmTime,
+		fdStatus,
+		fdLowElecTag,fdMoveTag,
+		fdLockTag,stationId,stationName,longitude,latitude,lngExt,latExt,areaId,vehicleDirect,CREATEDATE,fdNoElecTag,platenoArea,bycleid,CASEID)
+		values (#{alarmId,jdbcType=NUMERIC},
+		#{fdId,jdbcType=VARCHAR},
+		#{plateNo,jdbcType=VARCHAR},
+		#{alarmTime},
+		#{fdStatus,jdbcType=VARCHAR},
+		#{fdLowElecTag,jdbcType=NUMERIC},#{fdMoveTag,jdbcType=NUMERIC},
+		#{fdLockTag,jdbcType=NUMERIC},#{stationId,jdbcType=VARCHAR},#{stationName,jdbcType=VARCHAR},#{longitude,jdbcType=NUMERIC},#{latitude,jdbcType=NUMERIC},#{lngExt,jdbcType=NUMERIC},#{latExt,jdbcType=NUMERIC},#{areaId,jdbcType=VARCHAR},#{vehicleDirect,jdbcType=VARCHAR},sysdate,#{fdNoElecTag,jdbcType=NUMERIC},#{platenoArea,jdbcType=VARCHAR},#{bycleid,jdbcType=NUMERIC},#{caseId,jdbcType=VARCHAR})
+	</insert>
 	<insert id="bycleTrackedRecordModel_insert"
 		parameterType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
 		insert into

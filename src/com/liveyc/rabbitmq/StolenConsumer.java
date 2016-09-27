@@ -57,6 +57,7 @@ public class StolenConsumer {
 	public void afterPropertiesSet() {
 		iLog.error("StolenConsumer -afterPropertiesSet -start");
 		try {
+			Thread.sleep(4000);
 			while (ElectrombileServiceUtil.getService() == null) {
 				Thread.sleep(1000);
 
@@ -108,11 +109,14 @@ public class StolenConsumer {
 			// pool.
 			//iLog.error("收到一偷盗信息"+org.apache.commons.codec.binary.Hex.encodeHexString(body));
 			//iLog.error("收到一偷盗信息"+new String(body));
+			/*
 			try {
 				//StolenMessageTask.getInstance().putStolenMessageEvent(body);
 			} catch (Exception ex) {
 				//DealDataUtil.dealStolen(body);
 			}
+			*/
+			return ;
 		}
 
 		@Override

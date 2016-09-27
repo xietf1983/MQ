@@ -158,4 +158,8 @@ public class ElectrombileServiceImpl implements ElectrombileService {
 		return  getPersistence().findBycleWhite(model);
 	}
 
+	public boolean addbycleAlarmPreDeal(BycleAlarmModel model) {
+		return getPersistence().addbycleAlarmPreDeal(model);
+	}
+
 }

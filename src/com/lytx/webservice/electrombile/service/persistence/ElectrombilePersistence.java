@@ -139,6 +139,34 @@ public class ElectrombilePersistence extends SqlSessionDaoSupport {
 		}
 		return true;
 	}
+	
+	public boolean addbycleAlarmPreDeal(BycleAlarmModel model) {
+		try {
+			BycleAlarmModel s = findBycleAlarmPreDeal(model.getFdId(), null, null);
+			if (s == null) {
+				getSqlSession().insert("BycleAlarmPreDeal_insert", model);
+			} else if (model.getType() == 1 && s.getType() == 0) {
+
+			}
+		} catch (Exception ex) {
+			return false;
+		}
+		return true;
+	}
+	
+	public BycleAlarmModel findBycleAlarmPreDeal(String fdId, String startTime, String endTime) {
+		BycleAlarmModel bycleInfoShort = null;
+		try {
+			Map map = new HashMap();
+			map.put("FDID", fdId);
+			bycleInfoShort = getSqlSession().selectOne("queryBycleAlarmPreDeal", map);
+			// return bycleInfoShort;
+		} catch (Exception ex) {
+			// return null;
+		}
+		return bycleInfoShort;
+	}
+	
 
 	public void updatedBycleHandleAlarm(long alarmId) {
 		HashMap parameter = new HashMap();

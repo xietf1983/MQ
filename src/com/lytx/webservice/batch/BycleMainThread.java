@@ -116,13 +116,8 @@ public class BycleMainThread extends TimerTask {
 				// 断电移动与锁定移动时，增加到预警
 				List<TrackBycleShort> list2 = TrackedBycleUntil.match(b);
 				if (list2 == null || list2.size() == 0 || list2.get(0).getType() == 0) {
-					// 去掉设防移已经插入的数据
-					if (b.getFdMoveTag() == 1 && b.getFdLockTag() == 1) {
-
-					} else {
-						b.setType(0);
-						abnoramalList.add(b);
-					}
+					b.setType(0);
+					abnoramalList.add(b);
 
 				}
 

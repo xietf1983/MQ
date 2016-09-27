@@ -58,6 +58,7 @@ public class TrailConsumer {
 	public void afterPropertiesSet() {
 		iLog.error("TrailConsumer -afterPropertiesSet -start");
 		try {
+			Thread.sleep(8000);
 			while (ElectrombileServiceUtil.getService() == null) {
 				Thread.sleep(1000);
 
@@ -106,9 +107,10 @@ public class TrailConsumer {
 		@Override
 		public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body) throws IOException {
 			// DealDataUtil.dealTrailData(body);
-			iLog.error("收到一轨迹信息" + org.apache.commons.codec.binary.Hex.encodeHexString(body));
+			//iLog.error("收到一轨迹信息" + org.apache.commons.codec.binary.Hex.encodeHexString(body));
 			try {
 				TrailMessageTask.getInstance().putTrailMessageEvent(body);
+				//iLog.error("收到一轨迹信息");
 				// iLog.error("收到一轨迹信息11"+new String(body));
 			} catch (Exception ex) {
 				DealDataUtil.dealTrailData(body);
