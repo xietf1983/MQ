@@ -47,5 +47,6 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/asm-util-3.3.1.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/asm-xml-3.3.1.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-rabbit-1.5.4.RELEASE-sources.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/json-lib-2.1-jdk15.jar"/>
 	<classpathentry kind="output" path="webapp/WEB-INF/classes"/>
 </classpath>

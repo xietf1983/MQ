@@ -5,7 +5,7 @@
 <mapper namespace="com.xtsoft.kernel.main.model">
 	<insert id="bycleAlarm_insert"
 		parameterType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
-		insert into
+		insert /*SQL $fdId$ */ into
 		BYCLEALARM(alarmId,
 		fdid,
 		plateno,
@@ -85,7 +85,7 @@
 	</select>
 	<select id="queryTrackBycleShort_findone" parameterType="java.util.HashMap"
 		resultType="com.lytx.webservice.electrombile.model.TrackBycleShort">
-		select fdid,ruleId, caseId,type  from bycleBlack
+		select fdid,ruleId, caseId,type from bycleBlack
 		where
 		fdid
 		=#{FDID} AND ROWNUM =1
@@ -123,7 +123,8 @@
 	<select id="queryBycleAlarmPreDeal" parameterType="java.util.HashMap"
 		resultType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
 		select fdid, caseId,type,alarmId from
-		bycleAlarmPreDeal where
+		bycleAlarmPreDeal
+		where
 		fdid =#{FDID} AND ROWNUM =1
 	</select>
 	<!-- bycleAlarmPreDeal -->
@@ -186,7 +187,7 @@
 
 	<select id="queryBycleBlack" parameterType="java.util.HashMap"
 		resultType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
-		select fdid,ruleId,type,caseId  from
+		select fdid,ruleId,type,caseId from
 		BYCLEBLACK where
 		fdid=#{FDID} AND ROWNUM =1
 	</select>
@@ -255,6 +256,7 @@
 		=#{FDID,jdbcType=VARCHAR} AND
 		ROWNUM =1
 	</select>
+
 	<update id="tmsSms_update" parameterType="com.lytx.webservice.electrombile.model.TmsSms">
 		update TmsSms
 		set
@@ -270,4 +272,85 @@
 		=#{fdid} and id != #{id,jdbcType=NUMERIC}
 
 	</delete>
+
+	<select id="getgetDbDateTime" parameterType="java.util.HashMap"
+		resultType="java.lang.String">
+		select TO_CHAR(SYSDATE,'YYYY-MM-DD HH24:MI:SS') from DUAL
+	</select>
+
+	<select id="getWaringCountLastDay" parameterType="java.util.HashMap"
+		resultType="java.lang.Long">
+	 <![CDATA[   
+		select /*+ index(BYCLETRACKEDRECORD BYCLETRACKRECORD_PRECISE) */ count(*) as COUNTVALUE FROM BYCLETRACKEDRECORD WHERE 
+		 FDID=#{FDID} AND   PLATENO = #{PLATENO}  AND  ALARMTIME >=TO_DATE(#{STARTTIME},'YYYY-MM-DD HH24:Mi;SS')  ALARMTIME <=TO_DATE(#{ENDTIME},'YYYY-MM-DD HH24:Mi;SS')
+	 ]]>
+	</select>
+
+	<select id="judgementNormalAlfer" parameterType="java.util.HashMap"
+		resultType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
+	 <![CDATA[   
+		select /*+ index(BYCLEALARM BYCLEALARM_PLATENO_ALARMTIME) */ * FROM  BYCLEALARM   WHERE 
+		 FDID=#{FDID} AND   PLATENO = #{PLATENO}  AND  ALARMTIME >=TO_DATE(#{STARTTIME},'YYYY-MM-DD HH24:Mi;SS')  ALARMTIME <=TO_DATE(#{ENDTIME},'YYYY-MM-DD HH24:Mi;SS')
+	 ]]>
+	</select>
+
+	<insert id="bycleAlarmPreDealHis_insert"
+		parameterType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
+		insert into
+		bycleAlarmPreDealHis(alarmId,
+		fdid,
+		plateno,
+		alarmTime,
+		fdStatus,
+		fdLowElecTag,fdMoveTag,
+		fdLockTag,stationId,stationName,longitude,latitude,lngExt,latExt,areaId,vehicleDirect,CREATEDATE,fdNoElecTag,platenoArea,bycleid,CASEID,ruleid)
+		values (#{alarmId,jdbcType=NUMERIC},
+		#{fdId,jdbcType=VARCHAR},
+		#{plateNo,jdbcType=VARCHAR},
+		#{alarmTime},
+		#{fdStatus,jdbcType=VARCHAR},
+		#{fdLowElecTag,jdbcType=NUMERIC},#{fdMoveTag,jdbcType=NUMERIC},
+		#{fdLockTag,jdbcType=NUMERIC},#{stationId,jdbcType=VARCHAR},#{stationName,jdbcType=VARCHAR},#{longitude,jdbcType=NUMERIC},#{latitude,jdbcType=NUMERIC},#{lngExt,jdbcType=NUMERIC},#{latExt,jdbcType=NUMERIC},#{areaId,jdbcType=VARCHAR},#{vehicleDirect,jdbcType=VARCHAR},sysdate,#{fdNoElecTag,jdbcType=NUMERIC},#{platenoArea,jdbcType=VARCHAR},#{bycleid,jdbcType=NUMERIC},#{caseId,jdbcType=VARCHAR},#{ruleId,jdbcType=VARCHAR})
+	</insert>
+
+	<delete id="bycleAlarmPreDeal_delete"
+		parameterType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
+        <![CDATA[ delete from bycleAlarmPreDeal C   WHERE C.alarmId =#{alarmId,jdbcType=NUMERIC} ]]>
+	</delete>
+
+	<select id="bycleRules_selectByAreaId" parameterType="java.lang.String"
+		resultType="java.lang.String">
+	 <![CDATA[   
+		select RULEID FROM  BYCLEALARMRULERELATE   WHERE 
+		 EQPAREAID=#{EQPAREAID} 
+	 ]]>
+	</select>
+
+	<select id="bycleRules_selectFirstAreaId" parameterType="java.lang.String"
+		resultType="java.lang.String">
+	 <![CDATA[   
+		SELECT ID
+  FROM (SELECT     ID, NAME, LEVEL, PARENT
+              FROM eqp_area
+        START WITH ID = #{areaId,jdbcType=VARCHAR},
+        CONNECT BY ID = PRIOR PARENT
+          ORDER BY LEVEL DESC) s
+ WHERE PARENT <> '00' AND ROWNUM = 1
+	 ]]>
+	</select>
+
+	<select id="bycleRules_getAllEnableRules" parameterType="java.util.HashMap"
+		resultType="com.lytx.analysis.model.RuleModel">
+	 <![CDATA[   
+		SELECT  * from  BYCLEALARMRULE  where ISENABLE=1
+	 ]]>
+	</select>
+	<select id="bycleAlarmPreDeal_select" parameterType="java.util.HashMap"
+		resultType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
+	 <![CDATA[   
+		select * from (SELECT  t.* from  bycleAlarmPreDeal t  order by CREATEDATE )    where rownum <500
+	 ]]>
+	</select>
+
+
 </mapper>

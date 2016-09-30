@@ -133,6 +133,25 @@
 	</bean>
 	
 	
+	<bean
+		id="com.lytx.analysis.service.persistence.BycleAlarmRulePersistence"
+		class="com.lytx.analysis.service.persistence.BycleAlarmRulePersistence"
+		parent="basePersistence">
+	</bean>
+	<bean
+		id="com.lytx.analysis.service.impl.BycleAlarmRuleService"
+		class="com.lytx.analysis.service.impl.BycleAlarmRuleServiceImpl">
+		<property name="persistence"
+			ref="com.lytx.analysis.service.persistence.BycleAlarmRulePersistence" />
+	</bean>
+	<bean
+		id="com.lytx.analysis.service.BycleAlarmRuleServiceUtil"
+		class="com.lytx.analysis.service.BycleAlarmRuleServiceUtil">
+		<property name="service"
+			ref="com.lytx.analysis.service.impl.BycleAlarmRuleService" />
+	</bean>
+	
+	<bean id="com.lytx.webservice.batch.TrailScheduling" class="com.lytx.webservice.batch.TrailScheduling"></bean>
 	<bean id="com.lytx.webservice.batch.TrailScheduling" class="com.lytx.webservice.batch.TrailScheduling"></bean>
 	<bean id="com.lytx.webservice.batch.AbnormalScheduling" class="com.lytx.webservice.batch.AbnormalScheduling"></bean>
 	<bean id="com.lytx.webservice.batch.StolenScheduling" class="com.lytx.webservice.batch.StolenScheduling"></bean>
