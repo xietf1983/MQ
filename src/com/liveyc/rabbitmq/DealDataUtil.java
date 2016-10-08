@@ -487,7 +487,7 @@ public class DealDataUtil {
 
 					if (by.getFdMoveTag() == 1 && by.getFdLockTag() == 1) {
 						BycleAlarmModel m = by;
-						if (m.getAreaCode() != null && m.getBycleid() != null && m.getBycleid() > 0) {
+						if (m.getAreaId() != null && m.getBycleid() != null && m.getBycleid() > 0) {
 							iLog.error("增加到黑名单:" + m.getFdId());
 							BycleBlack b = new BycleBlack();
 							b.setActNo(m.getActNo());
