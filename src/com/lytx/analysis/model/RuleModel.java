@@ -6,7 +6,7 @@ public class RuleModel {
 	private boolean enable;
 	private int type;
 	private String ruleName;
-	private String ruleConfig;
+	private byte[] ruleConfig;
 	private int incomeingTime;// µ•Œª∑÷÷”
 
 	public int getIncomeingTime() {
@@ -27,11 +27,11 @@ public class RuleModel {
 
 	private int waringCount;
 
-	public String getRuleConfig() {
+	public byte[] getRuleConfig() {
 		return ruleConfig;
 	}
 
-	public void setRuleConfig(String ruleConfig) {
+	public void setRuleConfig(byte[] ruleConfig) {
 		this.ruleConfig = ruleConfig;
 	}
 

@@ -16,13 +16,13 @@ public class BycleAlarmModel {
 	public void setReceiveTime(Date receiveTime) {
 		this.receiveTime = receiveTime;
 	}
-	private Date creatDate;
-	public Date getCreatDate() {
-		return creatDate;
+	private Date createDate;
+	public Date getCreateDate() {
+		return createDate;
 	}
 
-	public void setCreatDate(Date creatDate) {
-		this.creatDate = creatDate;
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
 	}
 	private String fdStatus;
 	private Integer fdLowElecTag;

@@ -144,7 +144,7 @@ public class ElectrombilePersistence extends SqlSessionDaoSupport {
 		try {
 			BycleAlarmModel s = findBycleAlarmPreDeal(model.getFdId(), null, null);
 			if (s == null) {
-				getSqlSession().insert("BycleAlarmPreDeal_insert", model);
+				getSqlSession().insert("bycleAlarmPreDeal_insert", model);
 			} else if (model.getType() == 1 && s.getType() == 0) {
 
 			}
@@ -162,7 +162,7 @@ public class ElectrombilePersistence extends SqlSessionDaoSupport {
 			bycleInfoShort = getSqlSession().selectOne("queryBycleAlarmPreDeal", map);
 			// return bycleInfoShort;
 		} catch (Exception ex) {
-			// return null;
+			 return null;
 		}
 		return bycleInfoShort;
 	}

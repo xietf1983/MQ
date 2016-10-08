@@ -32,7 +32,7 @@ public class BycleAlarmRuleUtil {
 				rules.clear();
 				List<RuleModel> list = BycleAlarmRuleServiceUtil.getAllEnableRules();
 				for (RuleModel r : list) {
-					String xmldate = r.getRuleConfig();
+					String xmldate = new String(r.getRuleConfig());
 					try {
 						JSONObject json = JSONObject.fromObject(xmldate);
 						String type = json.getString("TYPE");
@@ -62,48 +62,41 @@ public class BycleAlarmRuleUtil {
 		boolean ret = false;
 		iLog.error("rules-list" + rules);
 		TrackBycleShort tshort = ElectrombileServiceUtil.getService().getTrackBycleShort(by.getFdId());
-		if (tshort != null && tshort.getType() == 1) {
-			// 黑名单数据，直接插入
-			by.setCaseId(tshort.getCaseId());
-			by.setRuleId(tshort.getRuleId());
-			by.setType(1);
-			ElectrombileServiceUtil.getService().addBycleHandleAlarm(by);
-			return false;
-		} else {
-			if (by.getAreaId() != null) {
-				String firstAreaId = BycleAlarmRuleServiceUtil.getFirstAreaId(by.getAreaId());
-				List<String> list = BycleAlarmRuleServiceUtil.getRules(firstAreaId);
-				if (list != null && list.size() > 0) {
-					for (String s : list) {
-						RuleModel r = rules.get(s);
-						if (r.getType() == 1) {
-							// 获取24小时前的异常过车数量
-							int countValue = BycleAlarmRuleServiceUtil.getWaringCountLastDay(by);
-							if (countValue > r.getWaringCount()) {
-								ret = true;
-								BycleAlarmRuleServiceUtil.addbycleAlarmPreDealHis(by, r.getRuleId(), true);
-								break;
-							}
-
-						}
-						if (r.getType() == 2) {
-							long a = r.getIncomeingTime();
-							Date end = new Date(by.getCreatDate().getTime() + a * 60 * 1000);
-							if (now.getTime() > end.getTime()) {
-								boolean b = BycleAlarmRuleServiceUtil.judgementNormalAlfer(DateUtil.toString(by.getCreatDate()), DateUtil.toString(end), by);
-								if (b) {
-									BycleAlarmRuleServiceUtil.addbycleAlarmPreDealHis(by, r.getRuleId(), true);
-									ret = true;
-									break;
-								}
-							} else {
-								continue;
-							}
+		boolean candelete = true;
+		if (by.getAreaId() != null) {
+			String firstAreaId = BycleAlarmRuleServiceUtil.getFirstAreaId(by.getAreaId());
+			List<String> list = BycleAlarmRuleServiceUtil.getRules(firstAreaId);
+			if (list != null && list.size() > 0) {
+				for (String s : list) {
+					RuleModel r = rules.get(s);
+					if (r != null && r.getType() == 1) {
+						// 获取24小时前的异常过车数量
+						int countValue = BycleAlarmRuleServiceUtil.getWaringCountLastDay(by);
+						if (countValue > r.getWaringCount()) {
+							ret = true;
+							BycleAlarmRuleServiceUtil.addbycleAlarmPreDealHis(by, r.getRuleId(), true);
+							break;
 						}
 
 					}
+					if (r != null && r.getType() == 2) {
+						long a = r.getIncomeingTime();
+						Date end = new Date(by.getCreateDate().getTime() + a * 60 * 1000);
+						if (now.getTime() > end.getTime()) {
+							boolean b = BycleAlarmRuleServiceUtil.judgementNormalAlfer(DateUtil.toString(by.getCreateDate()), DateUtil.toString(end), by);
+							if (b) {
+								BycleAlarmRuleServiceUtil.addbycleAlarmPreDealHis(by, r.getRuleId(), true);
+								ret = true;
+								break;
+							}
+						} else {
+							candelete = false;
+							continue;
+						}
+					}
 
-				} else {
+				}
+				if (candelete && !ret) {
 					BycleBlack b = new BycleBlack();
 					b.setActNo(by.getActNo());
 					b.setAlarmId(by.getAlarmId());
@@ -132,10 +125,40 @@ public class BycleAlarmRuleUtil {
 					by.setRuleId(b.getRuleId());
 					ElectrombileServiceUtil.getService().addBycleHandleAlarm(by);
 					BycleAlarmRuleServiceUtil.addbycleAlarmPreDealHis(by, null, true);
-
 				}
 
+			} else {
+				BycleBlack b = new BycleBlack();
+				b.setActNo(by.getActNo());
+				b.setAlarmId(by.getAlarmId());
+				b.setAlarmMemo(by.getAlarmMemo());
+				b.setAlarmTime(by.getAlarmTime());
+				b.setAlarmType(by.getAlarmType());
+				b.setAreaCode(by.getAreaCode());
+				b.setAreaId(by.getAreaId());
+				b.setBycleOwner(by.getBycleOwner());
+				b.setCaseId(ElectrombileServiceUtil.getService().getCaseIdNext(by.getAreaCode()));
+				b.setRuleId(UUID.randomUUID().toString());
+				b.setBycleId(by.getBycleid());
+				b.setFdId(by.getFdId());
+				b.setPlatenoArea(by.getPlatenoArea());
+				b.setPlateNo(by.getPlateNo());
+				b.setBycleOwner(by.getBycleOwner());
+				b.setAreaCode(by.getAreaCode());
+				b.setStatus("0");
+				b.setIssecret(0);
+				b.setSouce("4");
+				b.setBycleOwner(by.getBycleOwner());
+				b.setAlarmPhone(by.getUserTel());
+				b.setType(0);// 异常车辆库
+				ElectrombileServiceUtil.getService().addBycleBlack(b, null);
+				by.setCaseId(b.getCaseId());
+				by.setRuleId(b.getRuleId());
+				ElectrombileServiceUtil.getService().addBycleHandleAlarm(by);
+				BycleAlarmRuleServiceUtil.addbycleAlarmPreDealHis(by, null, true);
+
 			}
+
 		}
 
 		return ret;
