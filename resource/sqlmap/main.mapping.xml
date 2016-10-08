@@ -122,10 +122,11 @@
 	</insert>
 	<select id="queryBycleAlarmPreDeal" parameterType="java.util.HashMap"
 		resultType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
-		select fdid, caseId,type,alarmId from
+		select fdid, caseId,alarmId from
 		bycleAlarmPreDeal
 		where
-		fdid =#{FDID} AND ROWNUM =1
+		fdid
+		=#{FDID} AND ROWNUM =1
 	</select>
 	<!-- bycleAlarmPreDeal -->
 	<insert id="bycleAlarmPreDeal_insert"
@@ -282,7 +283,7 @@
 		resultType="java.lang.Long">
 	 <![CDATA[   
 		select /*+ index(BYCLETRACKEDRECORD BYCLETRACKRECORD_PRECISE) */ count(*) as COUNTVALUE FROM BYCLETRACKEDRECORD WHERE 
-		 FDID=#{FDID} AND   PLATENO = #{PLATENO}  AND  ALARMTIME >=TO_DATE(#{STARTTIME},'YYYY-MM-DD HH24:Mi;SS')  ALARMTIME <=TO_DATE(#{ENDTIME},'YYYY-MM-DD HH24:Mi;SS')
+		 FDID=#{FDID} AND   PLATENO = #{PLATENO}  AND  ALARMTIME >=TO_DATE(#{STARTTIME},'YYYY-MM-DD HH24:Mi;SS')  and ALARMTIME <=TO_DATE(#{ENDTIME},'YYYY-MM-DD HH24:Mi;SS')
 	 ]]>
 	</select>
 
@@ -290,7 +291,7 @@
 		resultType="com.lytx.webservice.electrombile.model.BycleAlarmModel">
 	 <![CDATA[   
 		select /*+ index(BYCLEALARM BYCLEALARM_PLATENO_ALARMTIME) */ * FROM  BYCLEALARM   WHERE 
-		 FDID=#{FDID} AND   PLATENO = #{PLATENO}  AND  ALARMTIME >=TO_DATE(#{STARTTIME},'YYYY-MM-DD HH24:Mi;SS')  ALARMTIME <=TO_DATE(#{ENDTIME},'YYYY-MM-DD HH24:Mi;SS')
+		 FDID=#{FDID} AND   PLATENO = #{PLATENO}  AND  ALARMTIME >=TO_DATE(#{STARTTIME},'YYYY-MM-DD HH24:Mi;SS') and  ALARMTIME <=TO_DATE(#{ENDTIME},'YYYY-MM-DD HH24:Mi;SS')
 	 ]]>
 	</select>
 
@@ -332,7 +333,7 @@
 		SELECT ID
   FROM (SELECT     ID, NAME, LEVEL, PARENT
               FROM eqp_area
-        START WITH ID = #{areaId,jdbcType=VARCHAR},
+        START WITH ID = #{areaId,jdbcType=VARCHAR} 
         CONNECT BY ID = PRIOR PARENT
           ORDER BY LEVEL DESC) s
  WHERE PARENT <> '00' AND ROWNUM = 1
@@ -342,7 +343,7 @@
 	<select id="bycleRules_getAllEnableRules" parameterType="java.util.HashMap"
 		resultType="com.lytx.analysis.model.RuleModel">
 	 <![CDATA[   
-		SELECT  * from  BYCLEALARMRULE  where ISENABLE=1
+		SELECT  ruleId,ruleconfig from   BYCLEALARMRULE  where ISENABLE=1
 	 ]]>
 	</select>
 	<select id="bycleAlarmPreDeal_select" parameterType="java.util.HashMap"

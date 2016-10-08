@@ -48,30 +48,21 @@
 		</property>
 		<property name="preferredTestQuery" value="select 1 from dual" />
 	</bean>
-	 <!--
-	<bean id="transactionManager"
-		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
-	<tx:advice id="txAdvice" transaction-manager="transactionManager">
-		<tx:attributes>
-			<tx:method name="get*" read-only="true" />
-			<tx:method name="find*" read-only="true" />
-			<tx:method name="*" />
-		</tx:attributes>
-	</tx:advice>
-	<aop:config>
-		<aop:pointcut id="netmanagerServiceOperation" expression="bean(*Service)" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="netmanagerServiceOperation" />
-	</aop:config>
-	-->
-	
+	<!-- <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> 
+		<property name="dataSource" ref="dataSource" /> </bean> <tx:advice id="txAdvice" 
+		transaction-manager="transactionManager"> <tx:attributes> <tx:method name="get*" 
+		read-only="true" /> <tx:method name="find*" read-only="true" /> <tx:method 
+		name="*" /> </tx:attributes> </tx:advice> <aop:config> <aop:pointcut id="netmanagerServiceOperation" 
+		expression="bean(*Service)" /> <aop:advisor advice-ref="txAdvice" pointcut-ref="netmanagerServiceOperation" 
+		/> </aop:config> -->
+
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="mapperLocations" value="classpath:sqlmap/*.xml" />
-		 <property name="configLocation" value="classpath:mybatis-config.xml" />
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+		
 	</bean>
-	
+
 
 	<bean id="basePersistence" abstract="true">
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
@@ -112,48 +103,44 @@
 		<property name="service"
 			ref="com.lytx.webservice.sequence.service.SequenceGeneratorService" />
 	</bean>
-	
-	
+
+
 	<bean
 		id="com.lytx.webservice.dbnotify.service.persistence.DbnotifyPersistence"
 		class="com.lytx.webservice.dbnotify.service.persistence.DbnotifyPersistence"
 		parent="basePersistence">
 	</bean>
-	<bean
-		id="com.lytx.webservice.dbnotify.service.impl.DbnotifyService"
+	<bean id="com.lytx.webservice.dbnotify.service.impl.DbnotifyService"
 		class="com.lytx.webservice.dbnotify.service.impl.DbnotifyServiceImpl">
 		<property name="persistence"
 			ref="com.lytx.webservice.dbnotify.service.persistence.DbnotifyPersistence" />
 	</bean>
-	<bean
-		id="com.lytx.webservice.dbnotify.service.DbnotifyServiceUtil"
+	<bean id="com.lytx.webservice.dbnotify.service.DbnotifyServiceUtil"
 		class="com.lytx.webservice.dbnotify.service.DbnotifyServiceUtil">
 		<property name="service"
 			ref="com.lytx.webservice.dbnotify.service.impl.DbnotifyService" />
 	</bean>
-	
-	
-	<bean
-		id="com.lytx.analysis.service.persistence.BycleAlarmRulePersistence"
+
+
+	<bean id="com.lytx.analysis.service.persistence.BycleAlarmRulePersistence"
 		class="com.lytx.analysis.service.persistence.BycleAlarmRulePersistence"
 		parent="basePersistence">
 	</bean>
-	<bean
-		id="com.lytx.analysis.service.impl.BycleAlarmRuleService"
+	<bean id="com.lytx.analysis.service.impl.BycleAlarmRuleService"
 		class="com.lytx.analysis.service.impl.BycleAlarmRuleServiceImpl">
 		<property name="persistence"
 			ref="com.lytx.analysis.service.persistence.BycleAlarmRulePersistence" />
 	</bean>
-	<bean
-		id="com.lytx.analysis.service.BycleAlarmRuleServiceUtil"
+	<bean id="com.lytx.analysis.service.BycleAlarmRuleServiceUtil"
 		class="com.lytx.analysis.service.BycleAlarmRuleServiceUtil">
 		<property name="service"
 			ref="com.lytx.analysis.service.impl.BycleAlarmRuleService" />
 	</bean>
-	
-	<bean id="com.lytx.webservice.batch.TrailScheduling" class="com.lytx.webservice.batch.TrailScheduling"></bean>
+
+	<bean id="com.lytx.analysis.scheduling.AnalysisScheduling" class="com.lytx.analysis.scheduling.AnalysisScheduling"></bean>
 	<bean id="com.lytx.webservice.batch.TrailScheduling" class="com.lytx.webservice.batch.TrailScheduling"></bean>
 	<bean id="com.lytx.webservice.batch.AbnormalScheduling" class="com.lytx.webservice.batch.AbnormalScheduling"></bean>
 	<bean id="com.lytx.webservice.batch.StolenScheduling" class="com.lytx.webservice.batch.StolenScheduling"></bean>
-	<bean id="com.lytx.webservice.scheduling.TrackedBycleScheduling" class="com.lytx.webservice.scheduling.TrackedBycleScheduling"></bean>
+	<bean id="com.lytx.webservice.scheduling.TrackedBycleScheduling"
+		class="com.lytx.webservice.scheduling.TrackedBycleScheduling"></bean>
 </beans>
