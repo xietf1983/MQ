@@ -18,8 +18,8 @@ public class BycleAlarmRulePersistence extends SqlSessionDaoSupport {
 		map.put("FDID", by.getFdId());
 		map.put("PLATENO", by.getPlateNo());
 		String date = DateUtil.toString(new Date(by.getAlarmTime().getTime() - DateUtil.DAY));
-		map.put("STARTTIME", DateUtil.dateToString(new Date(by.getAlarmTime().getTime() - DateUtil.DAY * 2)));
-		map.put("ENDTIME", DateUtil.dateToString(new Date(by.getAlarmTime().getTime() - DateUtil.DAY)));
+		map.put("STARTTIME",date+" 00:00:00");
+		map.put("ENDTIME", date+" 23:59:59" );
 		Long countValue = (Long) getSqlSession().selectOne("getWaringCountLastDay", map);
 		return countValue.intValue();
 	}
