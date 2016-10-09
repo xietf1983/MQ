@@ -14,8 +14,10 @@ import org.apache.log4j.Logger;
 import com.lytx.analysis.model.RuleModel;
 import com.lytx.webservice.electrombile.model.BycleAlarmModel;
 import com.lytx.webservice.electrombile.model.BycleBlack;
+import com.lytx.webservice.electrombile.model.BycleInfoShort;
 import com.lytx.webservice.electrombile.model.TrackBycleShort;
 import com.lytx.webservice.electrombile.service.ElectrombileServiceUtil;
+import com.lytx.webservice.sequence.service.SequenceGeneratorServiceUtil;
 import com.lytx.webservice.util.DateUtil;
 
 public class BycleAlarmRuleUtil {
@@ -98,6 +100,12 @@ public class BycleAlarmRuleUtil {
 				}
 				if (candelete && !ret) {
 					BycleBlack b = new BycleBlack();
+					BycleInfoShort bycleInfoShort = ElectrombileServiceUtil.getService().getBycleInfoShort(by.getFdId());
+					if (bycleInfoShort != null) {
+						by.setBycleOwner(bycleInfoShort.getOwner());
+						by.setUserTel(bycleInfoShort.getUserTel());
+					}
+					by.setAlarmId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.bycleseqName));
 					b.setActNo(by.getActNo());
 					b.setAlarmId(by.getAlarmId());
 					b.setAlarmMemo(by.getAlarmMemo());
@@ -123,12 +131,20 @@ public class BycleAlarmRuleUtil {
 					ElectrombileServiceUtil.getService().addBycleBlack(b, null);
 					by.setCaseId(b.getCaseId());
 					by.setRuleId(b.getRuleId());
+					by.setType(0);
+					by.setStatus("0");
 					ElectrombileServiceUtil.getService().addBycleHandleAlarm(by);
 					BycleAlarmRuleServiceUtil.addbycleAlarmPreDealHis(by, null, true);
 				}
 
 			} else {
 				BycleBlack b = new BycleBlack();
+				BycleInfoShort bycleInfoShort = ElectrombileServiceUtil.getService().getBycleInfoShort(by.getFdId());
+				if (bycleInfoShort != null) {
+					by.setBycleOwner(bycleInfoShort.getOwner());
+					by.setUserTel(bycleInfoShort.getUserTel());
+				}
+				by.setAlarmId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.bycleseqName));
 				b.setActNo(by.getActNo());
 				b.setAlarmId(by.getAlarmId());
 				b.setAlarmMemo(by.getAlarmMemo());
@@ -154,6 +170,8 @@ public class BycleAlarmRuleUtil {
 				ElectrombileServiceUtil.getService().addBycleBlack(b, null);
 				by.setCaseId(b.getCaseId());
 				by.setRuleId(b.getRuleId());
+				by.setType(0);
+				by.setStatus("0");
 				ElectrombileServiceUtil.getService().addBycleHandleAlarm(by);
 				BycleAlarmRuleServiceUtil.addbycleAlarmPreDealHis(by, null, true);
 

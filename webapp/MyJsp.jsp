@@ -17,12 +17,23 @@
 <%@page import="java.io.*"%>
 <%
 	org.apache.log4j.Logger iLog = org.apache.log4j.Logger.getLogger(com.liveyc.rabbitmq.DealDataUtil.class);
-	String byetedata = "001908000002380c132d227e2b1700000901020385270a0000017a001908000001730c132d227e2b17000009000203845e15000002390019080000013e0c132d227e2b17000009000203853ce44000024b001908000001900c132d217e2b1700000904020384c0d9600001b0001908000000530c132d227e2b1700000901020384c9f8200002ca";
-	//FileInputStream f = new FileInputStream("E:\\TOMCATSOA\\222.txt");
-	//BufferedReader dr = new BufferedReader(new InputStreamReader(f));
-
-	byte[] infodata = Test.hexStr2Bytes(byetedata);
-	com.liveyc.rabbitmq.DealDataUtil.dealTrailData(infodata);
+	Date now = new Date();
+	try {
+		BycleStationModel by = new BycleStationModel();
+		by.setStationId("461");
+		String dbcode = "461";
+		by.setAreaId("331004");
+		byte[] infodata = Test.hexStr2Bytes("01020385270aff0001");
+		DealDataUtil.dealinfodata(infodata, dbcode, now, by, 1);
+		//DealDataUtil.dealTrailData(infodata);
+		Thread.sleep(10000);
+	} catch (Exception ex) {
+		iLog.error(ex.toString());
+		try {
+			Thread.sleep(5000);
+		} catch (Exception exx) {
+		}
+	}
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">

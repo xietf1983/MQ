@@ -107,7 +107,7 @@ public class TrailConsumer {
 		@Override
 		public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body) throws IOException {
 			// DealDataUtil.dealTrailData(body);
-			//iLog.error("收到一轨迹信息" + org.apache.commons.codec.binary.Hex.encodeHexString(body));
+			iLog.error("收到一轨迹信息" + org.apache.commons.codec.binary.Hex.encodeHexString(body));
 			try {
 				TrailMessageTask.getInstance().putTrailMessageEvent(body);
 				//iLog.error("收到一轨迹信息");
