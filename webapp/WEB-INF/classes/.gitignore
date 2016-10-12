@@ -1,2 +1,9 @@
-/sqlmap/
+/base-spring.xml
 /com/
+/init.properties
+/log4j.properties
+/mybatis-config.xml
+/rabbitmq-spring.xml
+/rabbitmq.properties
+/spring/
+/sqlmap/

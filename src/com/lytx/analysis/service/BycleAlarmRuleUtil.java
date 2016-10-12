@@ -15,6 +15,7 @@ import com.lytx.analysis.model.RuleModel;
 import com.lytx.webservice.electrombile.model.BycleAlarmModel;
 import com.lytx.webservice.electrombile.model.BycleBlack;
 import com.lytx.webservice.electrombile.model.BycleInfoShort;
+import com.lytx.webservice.electrombile.model.BycleStationModel;
 import com.lytx.webservice.electrombile.model.TrackBycleShort;
 import com.lytx.webservice.electrombile.service.ElectrombileServiceUtil;
 import com.lytx.webservice.sequence.service.SequenceGeneratorServiceUtil;
@@ -62,9 +63,14 @@ public class BycleAlarmRuleUtil {
 		// boolean ret = false;
 		buildRules();
 		boolean ret = false;
-		iLog.error("rules-list" + rules);
+		//iLog.error("rules-list" + rules);
 		TrackBycleShort tshort = ElectrombileServiceUtil.getService().getTrackBycleShort(by.getFdId());
 		boolean candelete = true;
+		if (ElectrombileServiceUtil.getService().findBycleWhite(by)) {
+			iLog.error("°×Ãûµ¥" + by.getFdId());
+			BycleAlarmRuleServiceUtil.addbycleAlarmPreDealHis(by, null, true);
+			return false;
+		}
 		if (by.getAreaId() != null) {
 			String firstAreaId = BycleAlarmRuleServiceUtil.getFirstAreaId(by.getAreaId());
 			List<String> list = BycleAlarmRuleServiceUtil.getRules(firstAreaId);
@@ -105,12 +111,16 @@ public class BycleAlarmRuleUtil {
 						by.setBycleOwner(bycleInfoShort.getOwner());
 						by.setUserTel(bycleInfoShort.getUserTel());
 					}
-					by.setAlarmId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.bycleseqName));
+					//by.setAlarmId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.bycleseqName));
 					b.setActNo(by.getActNo());
 					b.setAlarmId(by.getAlarmId());
 					b.setAlarmMemo(by.getAlarmMemo());
 					b.setAlarmTime(by.getAlarmTime());
 					b.setAlarmType(by.getAlarmType());
+					BycleStationModel stationModel =ElectrombileServiceUtil.getService().getBycleStationModel(by.getStationId());
+					if(stationModel!= null){
+						by.setAreaCode(stationModel.getAreaCode());
+					}
 					b.setAreaCode(by.getAreaCode());
 					b.setAreaId(by.getAreaId());
 					b.setBycleOwner(by.getBycleOwner());
@@ -144,7 +154,10 @@ public class BycleAlarmRuleUtil {
 					by.setBycleOwner(bycleInfoShort.getOwner());
 					by.setUserTel(bycleInfoShort.getUserTel());
 				}
-				by.setAlarmId(SequenceGeneratorServiceUtil.getSequenceNext(SequenceGeneratorServiceUtil.bycleseqName));
+				BycleStationModel stationModel =ElectrombileServiceUtil.getService().getBycleStationModel(by.getStationId());
+				if(stationModel!= null){
+					by.setAreaCode(stationModel.getAreaCode());
+				}
 				b.setActNo(by.getActNo());
 				b.setAlarmId(by.getAlarmId());
 				b.setAlarmMemo(by.getAlarmMemo());
@@ -177,6 +190,8 @@ public class BycleAlarmRuleUtil {
 
 			}
 
+		}else{
+			BycleAlarmRuleServiceUtil.addbycleAlarmPreDealHis(by, null, true);
 		}
 
 		return ret;

@@ -18,8 +18,8 @@ public class BycleAlarmRulePersistence extends SqlSessionDaoSupport {
 		map.put("FDID", by.getFdId());
 		map.put("PLATENO", by.getPlateNo());
 		String date = DateUtil.toString(new Date(by.getAlarmTime().getTime() - DateUtil.DAY));
-		map.put("STARTTIME",date+" 00:00:00");
-		map.put("ENDTIME", date+" 23:59:59" );
+		map.put("STARTTIME", date + " 00:00:00");
+		map.put("ENDTIME", date + " 23:59:59");
 		Long countValue = (Long) getSqlSession().selectOne("getWaringCountLastDay", map);
 		return countValue.intValue();
 	}
@@ -74,8 +74,13 @@ public class BycleAlarmRulePersistence extends SqlSessionDaoSupport {
 	public void addbycleAlarmPreDealHis(BycleAlarmModel by, String ruleId, boolean delete) {
 		if (ruleId != null) {
 			by.setRuleId(ruleId);
+			try {
+				getSqlSession().insert("bycleAlarmPreDealHis_insert", by);
+			} catch (Exception ex) {
+
+			}
 		}
-		getSqlSession().insert("bycleAlarmPreDealHis_insert", by);
+		
 		if (delete) {
 			// 删除待处理表
 			getSqlSession().delete("bycleAlarmPreDeal_delete", by);
@@ -100,11 +105,13 @@ public class BycleAlarmRulePersistence extends SqlSessionDaoSupport {
 	public List<RuleModel> getAllEnableRules() {
 		return getSqlSession().selectList("bycleRules_getAllEnableRules", null);
 	}
+
 	/**
 	 * 获取待处理的设备
+	 * 
 	 * @return
 	 */
-	public List<BycleAlarmModel> getBycleAlarmPreDeal(){
+	public List<BycleAlarmModel> getBycleAlarmPreDeal() {
 		return getSqlSession().selectList("bycleAlarmPreDeal_select", null);
 	}
 }

@@ -114,15 +114,19 @@ public class ElectrombilePersistence extends SqlSessionDaoSupport {
 				Map map = new HashMap();
 				map.put("FDID", model.getFdId());
 				Object o = getSqlSession().selectOne("findByclewhite_findone", map);
-				if (o != null) {
+				if (o == null) {
+				} else {
 					ret = true;
 				}
+
 			} catch (Exception ex) {
-				// return null;
+				iLog.error(ex.toString() + "白名单查询出错");
 			}
 		} catch (Exception ex) {
+			iLog.error(ex.toString() + "白名单查询出错");
 			return false;
 		}
+		iLog.error(ret + "白名单结果");
 		return ret;
 	}
 
@@ -139,7 +143,7 @@ public class ElectrombilePersistence extends SqlSessionDaoSupport {
 		}
 		return true;
 	}
-	
+
 	public boolean addbycleAlarmPreDeal(BycleAlarmModel model) {
 		try {
 			BycleAlarmModel s = findBycleAlarmPreDeal(model.getFdId(), null, null);
@@ -153,7 +157,7 @@ public class ElectrombilePersistence extends SqlSessionDaoSupport {
 		}
 		return true;
 	}
-	
+
 	public BycleAlarmModel findBycleAlarmPreDeal(String fdId, String startTime, String endTime) {
 		BycleAlarmModel bycleInfoShort = null;
 		try {
@@ -162,11 +166,10 @@ public class ElectrombilePersistence extends SqlSessionDaoSupport {
 			bycleInfoShort = getSqlSession().selectOne("queryBycleAlarmPreDeal", map);
 			// return bycleInfoShort;
 		} catch (Exception ex) {
-			 return null;
+			return null;
 		}
 		return bycleInfoShort;
 	}
-	
 
 	public void updatedBycleHandleAlarm(long alarmId) {
 		HashMap parameter = new HashMap();
