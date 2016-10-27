@@ -16,7 +16,9 @@ public class BycleTask {
 	}
 
 	public void putBycleAlarmModelEvent(BycleAlarmModel v) throws IndexOutOfBoundsException {
-		getInstance().bycleQue.enqueue(v);
+		if (v.getAlarmTime() != null) {
+			getInstance().bycleQue.enqueue(v);
+		}
 	}
 
 	public EventQueue getBycleQue() {
