@@ -110,10 +110,16 @@ public class TrailConsumer {
 			iLog.error("收到一轨迹信息" + org.apache.commons.codec.binary.Hex.encodeHexString(body));
 			try {
 				TrailMessageTask.getInstance().putTrailMessageEvent(body);
-				//iLog.error("收到一轨迹信息");
+				// iLog.error("收到一轨迹信息");
 				// iLog.error("收到一轨迹信息11"+new String(body));
 			} catch (Exception ex) {
-				DealDataUtil.dealTrailData(body);
+				iLog.error("处理异常" + ex.toString());
+				try {
+					Thread.sleep(1000);
+					DealDataUtil.dealTrailData(body);
+				} catch (Exception exx) {
+					runing=false;
+				}
 			}
 			// TrailMessageTask.getInstance().putTrailMessageEvent(body);
 
@@ -160,7 +166,7 @@ public class TrailConsumer {
 					try {
 						Thread.sleep(60000);
 					} catch (Exception ex) {
-
+						iLog.error("");
 					}
 				}
 

@@ -20,17 +20,12 @@ public class Test {
 
 	/** * @param args * @throws SQLException * @throws IOException */
 	public static void main(String[] args) throws Exception {
-		int a = "0000017d03845701030c2513000260".length();
-		// byte[] data =
-		// hexStr2Bytes("001908000000470d0a1f397e2b170000090002038444c060000248".replaceAll(" ",
-		// ""));
-		dealmsg("000004270384e28c0509062a040260");
-		//byte[] data = hexStr2Bytes("TrailConsumer-收到一轨迹信息00190800000490041223297e2b17000009000203849ea52000024900190800000523041223297e2b1700000900020384dbe9000001e90019080000047d041223297e2b1700000900020384dffe40000190001908000005600412232a7e2b17000009000203848e812000017e00190800000393041223297e2b17000009000203851a8e200001e40019080000056f041223297e2b170000090002038482e02000022a0019080000044e041223297e2b170000090002038509f54000026d001908000003c7041223297e2b1700000900020384d70f40000286001908000003ef041223297e2b1700000900020384d2e4200002d6001908000004cd041223297e2b1700000900020385386d400002c6");
-
-		//String aa = new String(data);
-
-		int a2 = 4;
-
+		Long a =59084070l;
+		byte [] aa =DealDataUtil.intToByteArray(a);
+		//org.apache.commons.codec.binary.Hex.encodeHexString(aa)
+		System.out.print(org.apache.commons.codec.binary.Hex.encodeHexString(aa));
+		//org.apache.commons.codec.binary.Hex.encodeHexString(a.toHexString(16))
+		
 	}
 
 	public static byte[] subBytes(byte[] src, int begin, int count) {

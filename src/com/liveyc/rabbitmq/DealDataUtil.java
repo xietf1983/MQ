@@ -633,6 +633,7 @@ public class DealDataUtil {
 					curretdate.setHours(hour);
 					curretdate.setMinutes(minu);
 					curretdate.setSeconds(second);
+					by.setAlarmTime(curretdate);
 					BycleInfoShort bs = ElectrombileServiceUtil.getBycleInfoShort(by.getFdId());
 					// BycleInfoShort bs = new BycleInfoShort();
 					if (bs != null) {
