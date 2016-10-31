@@ -276,11 +276,11 @@ public class ElectrombilePersistence extends SqlSessionDaoSupport {
 		return true;
 	}
 
-	public TmsSms findTmsSms(BycleAlarmModel m) {
+	public TmsSms findTmsSms(TmsSms t) {
 		TmsSms bycleInfoShort = null;
 		try {
 			Map map = new HashMap();
-			map.put("FDID", m.getFdId());
+			map.put("FDID", t.getFdid());
 			bycleInfoShort = getSqlSession().selectOne("tmsSmsFindOne", map);
 			// return bycleInfoShort;
 		} catch (Exception ex) {
@@ -290,15 +290,15 @@ public class ElectrombilePersistence extends SqlSessionDaoSupport {
 	}
 
 	public boolean addToTmsSms(TmsSms t, boolean update) {
-		if (t.getMobilePhone() != null && !t.getMobilePhone().equals("")) {
+		try {
 			if (update) {
 				getSqlSession().insert("tmsSms_update", t);
 			} else {
 				getSqlSession().insert("tmsSms_insert", t);
 			}
-			getSqlSession().delete("tmsSms_delete", t);
+		} catch (Exception ex) {
+			return false;
 		}
-
 		return true;
 	}
 }

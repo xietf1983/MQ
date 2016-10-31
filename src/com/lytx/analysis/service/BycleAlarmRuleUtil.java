@@ -67,7 +67,7 @@ public class BycleAlarmRuleUtil {
 		TrackBycleShort tshort = ElectrombileServiceUtil.getService().getTrackBycleShort(by.getFdId());
 		boolean candelete = true;
 		if (ElectrombileServiceUtil.getService().findBycleWhite(by)) {
-			iLog.error("白名单" + by.getFdId());
+			//iLog.error("白名单" + by.getFdId());
 			BycleAlarmRuleServiceUtil.addbycleAlarmPreDealHis(by, null, true);
 			return false;
 		}

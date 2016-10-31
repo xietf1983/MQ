@@ -28,7 +28,7 @@ public class ElectrombileServiceImpl implements ElectrombileService {
 	public static Map<String, TrackBycleShort> trackBycleMap = new HashMap();
 	public static Date lastFDDate = new Date();
 	public static Date lastSTDate = new Date();
-	public static Date lasttmDate = new Date();
+	public static Map<String, String> tmsDatemap = new HashMap();
 
 	public ElectrombilePersistence getPersistence() {
 		return persistence;
@@ -37,8 +37,8 @@ public class ElectrombileServiceImpl implements ElectrombileService {
 	public void setPersistence(ElectrombilePersistence persistence) {
 		this.persistence = persistence;
 	}
-	
-	public String getCaseIdNext(String areaid){
+
+	public String getCaseIdNext(String areaid) {
 		return getPersistence().getCaseIdNext(areaid);
 	}
 
@@ -142,20 +142,50 @@ public class ElectrombileServiceImpl implements ElectrombileService {
 	public boolean addbycleStationTracked(BycleAlarmModel model) {
 		return getPersistence().addbycleStationTracked(model);
 	}
-	public TmsSms findTmsSms(BycleAlarmModel m){
-		return getPersistence().findTmsSms(m);
+
+	public TmsSms findTmsSms(TmsSms tms) {
+		return getPersistence().findTmsSms(tms);
 	}
 
-	public boolean addBycleBlack(BycleBlack b,BycleLostRecord lost){
-		return getPersistence().addBycleBlack(b,lost);
+	public boolean addBycleBlack(BycleBlack b, BycleLostRecord lost) {
+		return getPersistence().addBycleBlack(b, lost);
 	}
 
-	public boolean addToTmsSms(TmsSms tms,boolean update) {
-		return getPersistence().addToTmsSms(tms,update);
+	public boolean addToTmsSms(TmsSms tms, boolean update) {
+		TmsSms mm = null;
+		String lastTime = "";
+		update = false;
+		if (tmsDatemap.get(tms.getFdid()) != null) {
+			lastTime = tmsDatemap.get(tms.getFdid());
+			update = true;
+		} else {
+			mm = getPersistence().findTmsSms(tms);
+			if (mm != null) {
+				lastTime = DateUtil.toString(mm.getCreateDate());
+				update = true;
+			}
+		}
+		if (lastTime == null || lastTime.equals("")) {
+			getPersistence().addToTmsSms(tms, update);
+			tmsDatemap.put(tms.getFdid(), DateUtil.toString(tms.getCreateDate()).replaceAll("-", ""));
+
+		} else {
+			if (Long.parseLong(DateUtil.toString(tms.getCreateDate()).replaceAll("-", "")) > Long.parseLong(DateUtil.toString(tms.getCreateDate()).replaceAll("-", ""))) {
+				if (mm != null && mm.getStatus() == 0) {
+
+				} else {
+					getPersistence().addToTmsSms(tms, update);
+					tmsDatemap.put(tms.getFdid(), DateUtil.toString(tms.getCreateDate()).replaceAll("-", ""));
+				}
+			}
+
+		}
+		return true;
+
 	}
-	
-	public boolean findBycleWhite(BycleAlarmModel model){
-		return  getPersistence().findBycleWhite(model);
+
+	public boolean findBycleWhite(BycleAlarmModel model) {
+		return getPersistence().findBycleWhite(model);
 	}
 
 	public boolean addbycleAlarmPreDeal(BycleAlarmModel model) {

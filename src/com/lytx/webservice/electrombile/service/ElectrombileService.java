@@ -50,7 +50,7 @@ public interface ElectrombileService {
 
 	public boolean addToTmsSms(TmsSms tms,boolean update);
 
-	public TmsSms findTmsSms(BycleAlarmModel m);
+	public TmsSms findTmsSms(TmsSms tms);
 
 	public boolean addBycleBlack(BycleBlack b, BycleLostRecord lost);
 
