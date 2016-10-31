@@ -232,20 +232,16 @@
 
 	<insert id="tmsSms_insert" parameterType="com.lytx.webservice.electrombile.model.TmsSms">
 		insert into
-		TmsSms(id,fdid,
-		plateno,platenoArea,owner,mobilePhone,smscontent,status,createDate,sendDate,smsType,STATIONID)
+		byclefdLowElecTagNotify(fdid,
+		plateno,platenoArea, act,acttime)
 		values (
-		#{id,jdbcType=NUMERIC},
 		#{fdid,jdbcType=VARCHAR},
 		#{plateno,jdbcType=VARCHAR},
-		#{platenoArea,jdbcType=VARCHAR},#{owner,jdbcType=VARCHAR},#{mobilePhone,jdbcType=VARCHAR},#{smscontent,jdbcType=VARCHAR},
-		0,#{createDate,jdbcType=TIMESTAMP},null,#{smsType,jdbcType=VARCHAR},#{stationId,jdbcType=VARCHAR}
-		)
+		#{platenoArea,jdbcType=VARCHAR},0,TO_CHAR(#{sendDate,jdbcType=TIMESTAMP},'yyyy-mm-dd'))
 	</insert>
 	<select id="tmsSmsFindOne" parameterType="java.util.HashMap"
 		resultType="com.lytx.webservice.electrombile.model.TmsSms">
-		select * from
-		TmsSms where
+		select fdid,platenoarea,plateno,act as status,to_date(acttime ,'yyyy-mm-dd') as createDate  from byclefdLowElecTagNotify where
 		fdid =#{FDID,jdbcType=VARCHAR} AND
 		ROWNUM =1
 	</select>
@@ -259,12 +255,9 @@
 	</select>
 
 	<update id="tmsSms_update" parameterType="com.lytx.webservice.electrombile.model.TmsSms">
-		update TmsSms
-		set
-		platenoArea=#{platenoArea,jdbcType=VARCHAR},owner=#{owner,jdbcType=VARCHAR},
-		mobilePhone=#{mobilePhone,jdbcType=VARCHAR},createDate=#{createDate,jdbcType=TIMESTAMP},
-		smscontent=#{smscontent,jdbcType=VARCHAR},status=0,smsType=#{smsType,jdbcType=VARCHAR},stationId=#{stationId,jdbcType=VARCHAR}
-		where id=#{id,jdbcType=NUMERIC}
+		update byclefdLowElecTagNotify
+		set act=0,acttime=to_char(#{sendDate,jdbcType=TIMESTAMP},'yyyy-mm-dd')
+		where fdid=#{fdid,jdbcType=VARCHAR}
 
 	</update>
 	<delete id="tmsSms_delete" parameterType="com.lytx.webservice.electrombile.model.TmsSms">
