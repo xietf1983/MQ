@@ -14,6 +14,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 
 public class AbnormalConsumer {
@@ -106,15 +107,16 @@ public class AbnormalConsumer {
 
 		@Override
 		public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body) throws IOException {
-			//iLog.error("收到一异常信息" + org.apache.commons.codec.binary.Hex.encodeHexString(body));
-			/*
+			// iLog.error("收到一异常信息" +
+			// org.apache.commons.codec.binary.Hex.encodeHexString(body));*/
+
 			try {
-				//AbnormalMessageTask.getInstance().putAbnormalMessageEvent(body);
+				Thread.sleep(100);
 			} catch (Exception ex) {
-				//DealDataUtil.dealAbnormal(body);
+				// DealDataUtil.dealAbnormal(body);
 			}
-			*/
-			return ;
+
+			return;
 
 		}
 
@@ -129,6 +131,13 @@ public class AbnormalConsumer {
 						channel = connection.createChannel();
 						// channel.queueDeclare(getQueue(), false, false, false,
 						// null);
+						connection.addShutdownListener(new ShutdownListener() {
+							public void shutdownCompleted(ShutdownSignalException cause) {
+								iLog.error("连接断开--AbnormalConsumer,重试");
+								runing = false;
+								
+							}
+						});
 						channel.basicConsume(getQueue(), true, this);
 						runing = true;
 						Thread.sleep(6000);

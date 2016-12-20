@@ -16,6 +16,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 
 public class TrailConsumer {
@@ -23,6 +24,7 @@ public class TrailConsumer {
 	private ConnectionFactory factory;
 	private String queue;
 	private Channel channel;
+	private static long tryTime = 0;
 
 	public Channel getChannel() {
 		return channel;
@@ -109,7 +111,14 @@ public class TrailConsumer {
 			// DealDataUtil.dealTrailData(body);
 			iLog.error("收到一轨迹信息" + org.apache.commons.codec.binary.Hex.encodeHexString(body));
 			try {
-				TrailMessageTask.getInstance().putTrailMessageEvent(body);
+				if (tryTime < 1000) {
+					DealDataUtil.dealTrailData(body);
+					tryTime = tryTime + 1;
+
+				} else {
+					tryTime = tryTime + 1;
+					TrailMessageTask.getInstance().putTrailMessageEvent(body);
+				}
 				// iLog.error("收到一轨迹信息");
 				// iLog.error("收到一轨迹信息11"+new String(body));
 			} catch (Exception ex) {
@@ -118,7 +127,7 @@ public class TrailConsumer {
 					Thread.sleep(1000);
 					DealDataUtil.dealTrailData(body);
 				} catch (Exception exx) {
-					runing=false;
+					runing = false;
 				}
 			}
 			// TrailMessageTask.getInstance().putTrailMessageEvent(body);
@@ -134,8 +143,14 @@ public class TrailConsumer {
 							// messages.
 						connection = factory.newConnection();
 						channel = connection.createChannel();
-						// channel.queueDeclare(getQueue(), false, false, false,
-						// null);
+						connection.addShutdownListener(new ShutdownListener() {
+							public void shutdownCompleted(ShutdownSignalException cause) {
+								iLog.error("连接断开--TrailConsumer,重试");
+								runing = false;
+								tryTime = 0;
+
+							}
+						});
 						channel.basicConsume(getQueue(), true, this);
 						iLog.error("连接成功");
 						runing = true;

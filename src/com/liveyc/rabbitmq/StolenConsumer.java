@@ -15,6 +15,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 
 public class StolenConsumer {
@@ -22,6 +23,7 @@ public class StolenConsumer {
 	private String queue;
 	private Channel channel;
 	private static Logger iLog = Logger.getLogger(StolenConsumer.class);
+
 	// ExecutorService pool = Executors.newFixedThreadPool(2);
 	public Channel getChannel() {
 		return channel;
@@ -65,11 +67,11 @@ public class StolenConsumer {
 		} catch (Exception e) {
 		}
 		Thread consumerThread = new Thread(new QueueConsumer());
-		
+
 		consumerThread.start();
-		
+
 		iLog.error("StolenConsumer-consumerThread -start");
-	
+
 	}
 
 	class QueueConsumer implements Runnable, Consumer {
@@ -107,16 +109,19 @@ public class StolenConsumer {
 		@Override
 		public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body) throws IOException {
 			// pool.
-			//iLog.error("收到一偷盗信息"+org.apache.commons.codec.binary.Hex.encodeHexString(body));
-			//iLog.error("收到一偷盗信息"+new String(body));
+			// iLog.error("收到一偷盗信息"+org.apache.commons.codec.binary.Hex.encodeHexString(body));
+			// iLog.error("收到一偷盗信息"+new String(body));
 			/*
+			 * try {
+			 * //StolenMessageTask.getInstance().putStolenMessageEvent(body); }
+			 * catch (Exception ex) { //DealDataUtil.dealStolen(body); }
+			 */
 			try {
-				//StolenMessageTask.getInstance().putStolenMessageEvent(body);
+				Thread.sleep(100);
 			} catch (Exception ex) {
-				//DealDataUtil.dealStolen(body);
+				// DealDataUtil.dealStolen(body);
 			}
-			*/
-			return ;
+			return;
 		}
 
 		@Override
@@ -130,6 +135,13 @@ public class StolenConsumer {
 						channel = connection.createChannel();
 						// channel.queueDeclare(getQueue(), false, false, false,
 						// null);
+						connection.addShutdownListener(new ShutdownListener() {
+							public void shutdownCompleted(ShutdownSignalException cause) {
+								iLog.error("连接断开--StolenConsumer,重试");
+								runing = false;
+								
+							}
+						});
 						channel.basicConsume(getQueue(), true, this);
 						runing = true;
 						iLog.error("连接成功");
@@ -161,7 +173,7 @@ public class StolenConsumer {
 						Thread.sleep(6000);
 					} catch (Exception ex) {
 						iLog.error(ex.toString());
-						
+
 					}
 				}
 
