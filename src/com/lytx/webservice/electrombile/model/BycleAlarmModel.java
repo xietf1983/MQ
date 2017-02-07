@@ -54,6 +54,15 @@ public class BycleAlarmModel {
 	private String modifytab;
 	private String areaCode;
 	private String userTel;
+	private String cardType;
+
+	public String getCardType() {
+		return cardType;
+	}
+
+	public void setCardType(String cardType) {
+		this.cardType = cardType;
+	}
 
 	public String getUserTel() {
 		return userTel;
