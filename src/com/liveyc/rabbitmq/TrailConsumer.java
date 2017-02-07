@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
+import com.lytx.webservice.batch.BycleTask;
 import com.lytx.webservice.batch.StolenMessageTask;
 import com.lytx.webservice.batch.TrailMainThread;
 import com.lytx.webservice.batch.TrailMessageTask;
@@ -111,6 +112,7 @@ public class TrailConsumer {
 			// DealDataUtil.dealTrailData(body);
 			iLog.error("收到一轨迹信息" + org.apache.commons.codec.binary.Hex.encodeHexString(body));
 			try {
+
 				if (tryTime < 1000) {
 					DealDataUtil.dealTrailData(body);
 					tryTime = tryTime + 1;
@@ -119,8 +121,16 @@ public class TrailConsumer {
 					tryTime = tryTime + 1;
 					TrailMessageTask.getInstance().putTrailMessageEvent(body);
 				}
-				// iLog.error("收到一轨迹信息");
-				// iLog.error("收到一轨迹信息11"+new String(body));
+				if (tryTime % 1000 == 0) {
+					if (BycleTask.getInstance().getBycleQue().size() > 10000) {
+						iLog.error("插入缓慢，休息30秒");
+						try {
+							Thread.sleep(30000);
+						} catch (Exception ex) {
+
+						}
+					}
+				}
 			} catch (Exception ex) {
 				iLog.error("处理异常" + ex.toString());
 				try {

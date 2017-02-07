@@ -111,7 +111,7 @@ public class AbnormalConsumer {
 			// org.apache.commons.codec.binary.Hex.encodeHexString(body));*/
 
 			try {
-				Thread.sleep(100);
+				//Thread.sleep(100);
 			} catch (Exception ex) {
 				// DealDataUtil.dealAbnormal(body);
 			}

@@ -271,6 +271,7 @@ public class DealDataUtil {
 					 */
 					buffer2.append(buffer);
 					by.setFdId(buffer2.toString());
+					by.setCardType(bytecarType+"");
 					by.setStationId(dbcode);
 					int bytecarTypestatus = bytecar[6] & 0xff;
 					if (bytecarType == 1) {
