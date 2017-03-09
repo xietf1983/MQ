@@ -8,6 +8,24 @@ public class RuleModel {
 	private String ruleName;
 	private byte[] ruleConfig;
 	private int incomeingTime;// 单位分钟
+	private int fdstatus;// 布控状态
+	private int stationNum;
+	
+	public int getStationNum() {
+		return stationNum;
+	}
+
+	public void setStationNum(int stationNum) {
+		this.stationNum = stationNum;
+	}
+
+	public int getFdstatus() {
+		return fdstatus;
+	}
+
+	public void setFdstatus(int fdstatus) {
+		this.fdstatus = fdstatus;
+	}
 
 	public int getIncomeingTime() {
 		return incomeingTime;
