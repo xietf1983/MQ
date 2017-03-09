@@ -24,6 +24,8 @@ public class BycleAlarmModel {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
+	
+	
 	private String fdStatus;
 	private Integer fdLowElecTag;
 	private Integer fdMoveTag;
